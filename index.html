@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#655BFF">
+<title>EcoFiCation — Pendapatan Nasional & Kesenjangan Ekonomi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --violet:#655BFF;--violet-deep:#4C43D9;--coral:#FF6384;--lime:#D7FF64;--navy:#202344;--offwhite:#F7F7FC;--mint:#05CD99;--gold:#FFD45C;--red:#E65364;
+ --bg:var(--offwhite);--surface:#FFFFFF;--surface-2:#EFEFFF;--text:var(--navy);--muted:#606783;--border:var(--navy);--soft-border:#DADCEF;
+ --shadow:6px 6px 0 var(--border);--shadow-hover:10px 10px 0 var(--border);--nav-bg:rgba(255,255,255,.9);--field:#FFFFFF;--chart-grid:#E0E3F0;
+ --font:'Plus Jakarta Sans',sans-serif;--mono:'Space Mono',monospace;--radius:22px;
+}
+[data-theme="dark"]{
+ --bg:#121421;--surface:#1C2033;--surface-2:#272A47;--text:#F6F6FF;--muted:#B1B6CE;--border:#D7FF64;--soft-border:#3A3E5D;
+ --shadow:6px 6px 0 #D7FF64;--shadow-hover:10px 10px 0 #D7FF64;--nav-bg:rgba(28,32,51,.92);--field:#171A2B;--chart-grid:#3A3E5D;
+}
+*{box-sizing:border-box;margin:0;padding:0;scroll-behavior:smooth}
+
+/* --- MODERN BACKGROUND & GRID --- */
+body{
+ font-family:var(--font);
+ background-color:var(--bg);
+ background-image: radial-gradient(var(--soft-border) 1.5px, transparent 1.5px);
+ background-size: 28px 28px;
+ background-attachment: fixed;
+ color:var(--text);
+ line-height:1.65;
+ overflow-x:hidden;
+ transition:background-color .25s,color .25s;
+}
+.bg-orbs { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-2; overflow:hidden; pointer-events:none; }
+.orb { position:absolute; border-radius:50%; filter:blur(120px); opacity:0.35; animation:orbFloat 20s infinite alternate ease-in-out; }
+.orb-1 { width:50vw; height:50vw; background:var(--violet); top:-10vw; left:-10vw; }
+.orb-2 { width:45vw; height:45vw; background:var(--coral); bottom:-10vw; right:-5vw; animation-delay:-10s; }
+[data-theme="dark"] .orb { opacity: 0.15; }
+
+@keyframes orbFloat { 0% { transform:translate(0, 0) scale(1); } 100% { transform:translate(8vw, 12vw) scale(1.1); } }
+
+button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}p{color:var(--muted);margin:0 0 1rem}strong{color:var(--text)}
+:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
+.container{width:min(1160px,calc(100% - 40px));margin-inline:auto; position: relative; z-index: 1;}
+.skip-link{position:absolute;left:-9999px;top:auto}.skip-link:focus{left:12px;top:12px;z-index:2000;background:var(--lime);color:var(--navy);padding:12px;border:2px solid var(--navy)}
+.scroll-progress{position:fixed;z-index:1200;top:0;left:0;width:0;height:5px;background:linear-gradient(90deg,var(--violet),var(--coral),var(--lime))}
+
+/* Navigation */
+.site-nav{position:fixed;z-index:1100;top:16px;left:50%;transform:translateX(-50%);width:min(1200px,calc(100% - 28px));padding:8px 10px 8px 18px;display:flex;align-items:center;gap:12px;background:var(--nav-bg);backdrop-filter:blur(16px);border:2px solid var(--border);border-radius:999px;box-shadow:4px 4px 0 var(--border)}
+.brand{display:flex;align-items:center;gap:9px;white-space:nowrap;font-weight:800;letter-spacing:-.04em}.brand-mark{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px}.brand-name{font-size:15px}.nav-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}.nav-link{white-space:nowrap;padding:8px 11px;border-radius:999px;color:var(--muted);font-size:12px;font-weight:800;transition:background .2s,color .2s}.nav-link:hover,.nav-link.active{background:var(--text);color:var(--bg)}.nav-actions{display:flex;align-items:center;gap:7px}.xp-pill{font:700 11px var(--mono);white-space:nowrap;background:var(--surface-2);border:1px solid var(--border);padding:8px 10px;border-radius:999px}.theme-btn{width:36px;height:36px;flex:0 0 36px;border:2px solid var(--border);border-radius:50%;background:var(--lime);color:var(--navy);font-size:16px}
+
+/* Hero */
+.hero-shell{padding:118px 0 40px}.hero{position:relative;isolation:isolate;min-height:590px;overflow:hidden;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:36px;padding:clamp(28px,5vw,68px);border:3px solid var(--navy);border-radius:34px;background:linear-gradient(125deg,#655BFF 0%,#8170F7 47%,#FF6384 100%);box-shadow:9px 9px 0 var(--navy);color:white}
+.hero:before,.hero:after{content:"";position:absolute;z-index:-1;border:2px solid rgba(255,255,255,.24);border-radius:50%}.hero:before{width:440px;height:440px;right:-180px;top:-190px}.hero:after{width:280px;height:280px;left:-130px;bottom:-165px}
+.hero-copy{position:relative;z-index:1}.eyebrow{display:inline-flex;align-items:center;gap:8px;font:700 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;background:rgba(32,35,68,.28);border:1px solid rgba(255,255,255,.4);padding:8px 12px;border-radius:999px;margin-bottom:22px}.eyebrow-dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(215,255,100,.2)}
+.hero h1{font-size:clamp(2.75rem,5.6vw,5.6rem);line-height:.98;letter-spacing:-.075em;max-width:700px;margin-bottom:22px;color:white}.hero h1 .highlight{display:inline;position:relative;z-index:0;color:var(--navy);white-space:normal}.hero h1 .highlight:after{content:"";position:absolute;z-index:-1;height:.42em;bottom:.04em;left:-.06em;right:-.06em;background:var(--lime);transform:rotate(-1.5deg)}.hero-copy>p{max-width:540px;color:rgba(255,255,255,.9);font-size:clamp(15px,1.4vw,18px);margin-bottom:26px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 19px;border:2px solid var(--navy);border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.02em;transition:transform .18s,box-shadow .18s,background .18s;box-shadow:4px 4px 0 var(--navy)}.btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--navy)}.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--navy)}.btn-lime{background:var(--lime);color:var(--navy)}.btn-white{background:white;color:var(--navy)}.btn-dark{background:var(--navy);color:white}.btn-coral{background:var(--coral);color:white}
+.hero-maker{display:flex;align-items:center;gap:11px;margin-top:28px}.maker-avatar{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;border:2px solid white;background:var(--lime);color:var(--navy);font-weight:900;font-family:var(--mono);transform:rotate(-5deg)}.maker-meta strong{display:block;color:white;font-size:12px}.maker-meta span{display:block;color:rgba(255,255,255,.8);font-size:11px}
+.hero-art{position:relative;min-height:400px;display:grid;place-items:center}.orbit{position:absolute;width:340px;height:340px;border:2px dashed rgba(255,255,255,.4);border-radius:50%;animation:orbit 24s linear infinite}.orbit:before,.orbit:after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--navy);border-radius:5px;background:var(--lime)}.orbit:before{top:36px;left:53px}.orbit:after{right:28px;bottom:63px;background:var(--coral)}.question-panel{position:relative;width:min(100%,370px);background:var(--offwhite);color:var(--navy);border:3px solid var(--navy);border-radius:24px;padding:26px;box-shadow:9px 9px 0 var(--navy);transform:rotate(2deg)}.panel-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font:700 10px var(--mono);letter-spacing:.04em;margin-bottom:20px}.live-tag{background:var(--lime);border:1px solid var(--navy);border-radius:999px;padding:4px 8px}.hero-bars{height:128px;display:flex;align-items:flex-end;gap:12px;padding:0 14px 13px;border-bottom:2px solid var(--navy);background:repeating-linear-gradient(to top,transparent 0,transparent 30px,#E1E2EF 31px,#E1E2EF 32px)}.hero-bar{flex:1;min-width:22px;border:2px solid var(--navy);border-bottom:0;border-radius:8px 8px 0 0;background:var(--violet);animation:barPulse 2s ease-in-out infinite alternate;transform-origin:bottom}.hero-bar:nth-child(2){background:var(--coral);animation-delay:.25s}.hero-bar:nth-child(3){background:var(--lime);animation-delay:.5s}.hero-bar:nth-child(4){background:var(--mint);animation-delay:.75s}.hero-bar:nth-child(5){background:#B8AEFF;animation-delay:1s}.chart-legend{display:flex;justify-content:space-between;gap:8px;font:700 9px var(--mono);margin-top:8px;color:#565D79}.question-panel h2{font-size:clamp(1.4rem,2.3vw,2rem);line-height:1.08;letter-spacing:-.06em;margin:22px 0 10px}.question-panel p{font-size:12px;line-height:1.55;margin:0}.floating-sticker{position:absolute;right:-8px;top:24px;transform:rotate(9deg);background:var(--lime);color:var(--navy);border:2px solid var(--navy);box-shadow:4px 4px 0 var(--navy);padding:10px 13px;border-radius:12px;font:800 10px var(--mono)}
+@keyframes orbit{to{transform:rotate(360deg)}}@keyframes barPulse{from{transform:scaleY(.88)}to{transform:scaleY(1)}}
+
+/* Intro path and sections */
+.section{padding:88px 0;scroll-margin-top:100px}.section.alt{background:var(--surface);border-block:2px dashed var(--soft-border)}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:32px}.section-head-copy{max-width:720px}.section-kicker{font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:10px}.section-title{font-size:clamp(2rem,4.4vw,3.7rem);line-height:1;letter-spacing:-.07em;margin-bottom:14px}.section-desc{max-width:680px;margin:0; background: var(--surface); padding: 8px 12px; border-radius: 8px; display: inline-block; border: 1px solid var(--soft-border);}.section-aside{font:700 10px var(--mono);color:var(--muted);white-space:nowrap; background: var(--surface); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--soft-border);}
+.mission-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.mission-tile{position:relative;min-height:160px;padding:21px;border:2px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:4px 4px 0 var(--border);transition:transform .2s,box-shadow .2s}.mission-tile:nth-child(2){background:var(--lime);color:var(--navy)}.mission-tile:nth-child(3){background:var(--coral);color:white}.mission-tile:nth-child(4){background:var(--violet);color:white}.mission-tile:hover{transform:translate(-3px,-3px);box-shadow:7px 7px 0 var(--border)}.mission-num{font:700 11px var(--mono);opacity:.75}.mission-icon{font-size:28px;margin:14px 0 8px}.mission-tile h3{font-size:17px;line-height:1.15;margin-bottom:7px}.mission-tile p{font-size:11px;line-height:1.45;margin:0;color:inherit;opacity:.78}.snapshot-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.snapshot-card{padding:24px;border:2px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:4px 4px 0 var(--border)}.snapshot-card:nth-child(2){background:var(--navy);color:white}.snapshot-card:nth-child(2) p,.snapshot-card:nth-child(2) .stat-label{color:#C3C7E2}.snapshot-card:nth-child(3){background:var(--lime);color:var(--navy)}.stat-label{font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.stat-big{font:700 clamp(2.2rem,4vw,3.5rem) var(--mono);letter-spacing:-.09em;line-height:1.05;margin:12px 0}.snapshot-card p{font-size:12px;line-height:1.5;margin:0}.callout{padding:20px 22px;border:2px dashed var(--border);border-radius:16px;background:var(--surface);color:var(--text);margin-top:18px; box-shadow: 4px 4px 0px rgba(0,0,0,0.05);}.callout strong{display:block;margin-bottom:5px}.callout p{font-size:13px;margin:0}
+
+/* Core content */
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.concept-card{padding:28px;border:2px solid var(--border);border-radius:22px;background:var(--surface);box-shadow:5px 5px 0 var(--border)}.concept-card.featured{background:var(--violet);color:white}.concept-card.featured p,.concept-card.featured li{color:rgba(255,255,255,.88)}.concept-card.featured h3,.concept-card.featured strong{color:white}.concept-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:22px}.concept-index{font:700 11px var(--mono);background:var(--lime);color:var(--navy);padding:6px 9px;border:1px solid var(--navy);border-radius:7px}.concept-symbol{font-size:24px}.concept-card h3{font-size:25px;letter-spacing:-.05em;margin-bottom:10px}.concept-card p{font-size:14px}.concept-card ul{padding-left:20px;color:var(--muted);font-size:13px}.concept-card li{margin-bottom:7px}.definition-note{margin-top:15px;padding:13px;border-radius:12px;background:var(--surface-2);font-size:12px;color:var(--text)}.featured .definition-note{background:rgba(255,255,255,.13);color:white}.flow-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:22px}.flow-step{padding:15px;border:2px solid var(--border);border-radius:14px;background:var(--surface);min-width:0; box-shadow: 3px 3px 0 var(--soft-border);}.flow-step small{display:block;font:700 10px var(--mono);color:var(--violet);margin-bottom:6px}.flow-step strong{display:block;font-size:13px;margin-bottom:4px}.flow-step span{display:block;color:var(--muted);font-size:11px;line-height:1.4}.flow-arrow{color:var(--coral);font-weight:900}
+
+/* Calculator */
+.calc-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;align-items:stretch}.calc-intro{padding:30px;background:var(--navy);color:white;border:3px solid var(--navy);border-radius:22px;box-shadow:6px 6px 0 var(--coral)}.calc-intro h3{font-size:28px;line-height:1.1;margin:15px 0}.calc-intro p{color:#D1D4ED;font-size:13px}.formula-chip{display:inline-block;font:700 11px var(--mono);background:var(--lime);color:var(--navy);padding:8px 11px;border-radius:8px}.calc-box{padding:26px;border:2px solid var(--border);border-radius:22px;background:var(--surface);box-shadow:5px 5px 0 var(--border)}.tabs{display:flex;gap:6px;padding:5px;background:var(--surface-2);border:1px solid var(--soft-border);border-radius:14px;margin-bottom:24px}.tab{flex:1;padding:11px 9px;border-radius:10px;color:var(--muted);font-size:12px;font-weight:800}.tab.active{background:var(--violet);color:white;box-shadow:0 3px 0 var(--navy)}.calc-pane{display:none}.calc-pane.active{display:block;animation:fadeIn .25s}.formula-display{padding:13px 16px;border-radius:12px;background:var(--navy);color:var(--lime);font:700 13px var(--mono);margin-bottom:20px;overflow-x:auto}.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.input-group{margin-bottom:13px}.input-group label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.input-group input,.input-group textarea{width:100%;padding:12px 13px;border:2px solid var(--soft-border);background:var(--field);color:var(--text);border-radius:10px;outline:none}.input-group input:focus,.input-group textarea:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(101,91,255,.12)}.input-group input[readonly]{background:var(--surface-2);color:var(--muted);cursor:not-allowed}.calc-result{display:none;margin-top:20px;border:2px solid var(--navy);border-radius:16px;padding:20px;background:var(--lime);color:var(--navy)}.calc-result.show{display:block;animation:fadeIn .25s}.result-label{font:700 10px var(--mono);text-transform:uppercase}.result-number{font:700 clamp(1.8rem,3vw,2.8rem) var(--mono);letter-spacing:-.07em;margin:7px 0}.result-steps{font-size:12px;line-height:1.7}.calc-help{font-size:11px;margin-top:12px}.small-btn{border:2px solid var(--border);padding:10px 13px;border-radius:10px;font-size:12px;font-weight:800;background:var(--surface-2);color:var(--text)}
+
+/* Per capita */
+.percap-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.percap-visual{padding:32px;background:var(--coral);border:3px solid var(--navy);border-radius:24px;box-shadow:7px 7px 0 var(--navy);color:var(--navy)}.percap-visual h3{font-size:24px;margin-bottom:12px}.percap-visual .equation{padding:18px;border:2px solid var(--navy);border-radius:14px;background:white;color:var(--navy);font:700 16px var(--mono);text-align:center;margin:20px 0}.percap-form{padding:26px;border:2px solid var(--border);border-radius:22px;background:var(--surface);box-shadow:5px 5px 0 var(--border)}.percap-output{padding:16px;border-radius:14px;background:var(--surface-2);margin-top:12px}.percap-output span{display:block;font:700 clamp(1.4rem,3vw,2.4rem) var(--mono);letter-spacing:-.07em;color:var(--violet)}
+
+/* Inequality */
+.cause-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.cause-card{padding:20px 16px;border:2px solid var(--border);border-radius:17px;background:var(--surface);min-height:190px;box-shadow:4px 4px 0 var(--border);transition:transform .2s}.cause-card:nth-child(2n){background:var(--surface-2)}.cause-card:hover{transform:translateY(-5px)}.cause-icon{font-size:28px;margin-bottom:15px}.cause-card h3{font-size:15px;margin-bottom:8px}.cause-card p{font-size:11px;line-height:1.55;margin:0}.cause-number{font:700 10px var(--mono);color:var(--coral);display:block;margin-bottom:7px}.lorenz-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:24px;align-items:center}.gini-control,.lorenz-visual{padding:28px;background:var(--surface);border:2px solid var(--border);border-radius:22px;box-shadow:5px 5px 0 var(--border)}.gini-control h3,.lorenz-visual h3{font-size:22px;margin-bottom:10px}.gini-number{font:700 clamp(3.8rem,7vw,5.5rem) var(--mono);letter-spacing:-.1em;color:var(--violet);line-height:1;margin:22px 0 14px}.gini-badge{display:inline-flex;border:2px solid var(--navy);border-radius:999px;background:var(--lime);color:var(--navy);padding:7px 12px;font-size:11px;font-weight:800}.gini-range{width:100%;margin:22px 0 14px;accent-color:var(--violet);cursor:pointer}.scale-labels{display:flex;justify-content:space-between;font:700 10px var(--mono);color:var(--muted)}.gini-note{font-size:12px;margin-top:18px}.lorenz-visual canvas{display:block;width:100%;height:auto;background:var(--surface-2);border:1px solid var(--soft-border);border-radius:14px}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:12px 0 0}.legend span{display:inline-flex;align-items:center;gap:7px}.legend i{display:inline-block;width:18px;height:4px;background:var(--mint)}.legend .curve-key{background:var(--coral)}.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.case-card{padding:25px;border:2px solid var(--border);border-radius:20px;background:var(--surface)}.case-card:first-child{background:var(--lime);color:var(--navy)}.case-card:first-child p{color:#3B4160}.case-card h3{font-size:21px;margin-bottom:12px}.case-card p{font-size:13px}.case-card .case-label{font:700 10px var(--mono);text-transform:uppercase;display:inline-block;border:1px solid currentColor;border-radius:6px;padding:5px 8px;margin-bottom:15px}.case-card .flow{font:700 12px var(--mono);padding:12px;border:1px dashed currentColor;border-radius:10px;margin-top:12px}
+
+/* World Bank Criteria Strip */
+.wb-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.wb-card{padding:18px;border:2px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:4px 4px 0 var(--border)}
+.wb-card small{display:block;font:700 10px var(--mono);color:var(--violet);text-transform:uppercase;margin-bottom:6px}
+.wb-card strong{display:block;font-size:15px;margin-bottom:4px}
+.wb-card p{font-size:12px;margin:0}
+
+/* policy */
+.policy-layout{display:grid;grid-template-columns:1fr .9fr;gap:24px;align-items:start}.policy-list{display:grid;gap:10px}.policy-option{display:flex;gap:14px;align-items:center;width:100%;padding:16px;text-align:left;border:2px solid var(--border);border-radius:15px;background:var(--surface);color:var(--text);transition:background .2s,transform .2s}.policy-option:hover:not(:disabled){background:var(--surface-2);transform:translateX(3px)}.policy-option.selected{background:var(--lime);color:var(--navy)}.policy-option:disabled{opacity:.5;cursor:not-allowed}.policy-emoji{font-size:25px;width:34px;text-align:center}.policy-name{flex:1}.policy-name strong{display:block;font-size:13px}.policy-name small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.policy-option.selected .policy-name small{color:#3F4662}.policy-cost{font:700 10px var(--mono);white-space:nowrap}.policy-console{padding:25px;border:3px solid var(--navy);border-radius:22px;background:var(--navy);color:white;box-shadow:7px 7px 0 var(--coral)}.policy-console h3{font-size:23px;color:white;margin-bottom:7px}.policy-console p{font-size:12px;color:#C6CAE4}.budget-row{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:22px}.budget-number{font:700 2.1rem var(--mono);color:var(--lime);letter-spacing:-.08em}.budget-bar{height:13px;background:#434767;border:1px solid #777DA3;border-radius:999px;overflow:hidden;margin:9px 0 18px}.budget-fill{height:100%;width:100%;background:var(--mint);transition:width .25s}.log-title{font:700 10px var(--mono);color:var(--lime);margin-bottom:8px}.policy-log{max-height:180px;overflow:auto;background:#16192B;border:1px solid #434767;border-radius:12px;padding:13px;font:11px/1.7 var(--mono);color:#D7D9EB;white-space:normal}.policy-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.policy-result{display:none;margin-top:18px;padding:15px;border-radius:12px;background:#282D48;border:1px solid #656B94;color:white;font-size:12px}.policy-result.show{display:block}.policy-result strong{color:var(--lime)}
+
+/* Quiz */
+.quiz-layout{max-width:820px;margin:0 auto}.quiz-box{padding:clamp(22px,4vw,38px);background:var(--surface);border:3px solid var(--border);border-radius:24px;box-shadow:7px 7px 0 var(--border)}.quiz-top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:2px dashed var(--soft-border);padding-bottom:18px;margin-bottom:24px}.quest-number{font:700 11px var(--mono);background:var(--lime);color:var(--navy);padding:7px 10px;border-radius:8px}.quiz-reward{font:700 11px var(--mono);color:var(--coral)}.quiz-track{height:9px;background:var(--surface-2);border:1px solid var(--soft-border);border-radius:999px;overflow:hidden;margin-bottom:24px}.quiz-track-fill{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--coral));transition:width .3s}.quiz-question{font-size:clamp(1.2rem,2.7vw,1.8rem);letter-spacing:-.04em;margin-bottom:20px}.quiz-options{display:grid;gap:10px}.q-option{width:100%;text-align:left;display:flex;gap:12px;align-items:center;padding:14px 16px;border:2px solid var(--soft-border);border-radius:13px;background:var(--bg);color:var(--text);font-size:13px;font-weight:700;transition:transform .18s,border-color .18s}.q-option:hover:not(:disabled){border-color:var(--violet);transform:translateX(4px)}.q-option .option-key{width:28px;height:28px;flex:0 0 28px;display:grid;place-items:center;border:1px solid var(--soft-border);border-radius:8px;font:700 11px var(--mono)}.q-option.correct{background:#CCFBEA;border-color:#007A5A;color:#163D32}.q-option.wrong{background:#FFE0E5;border-color:#A72C43;color:#601A2A}.quiz-feedback{display:none;margin-top:18px;padding:15px;border-radius:12px;background:var(--surface-2);font-size:12px}.quiz-feedback.show{display:block;animation:fadeIn .2s}.quiz-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}.quiz-result{display:none;text-align:center;padding:22px 0}.quiz-score{font:700 clamp(3.2rem,7vw,5rem) var(--mono);color:var(--violet);letter-spacing:-.1em}.quiz-result h3{font-size:28px;margin:15px 0 5px}.quiz-result p{max-width:520px;margin:0 auto 22px}
+
+/* Profile & Achievements */
+.achievement-layout{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:20px}
+.guru-card{background:var(--surface);border:3px solid var(--border);border-radius:26px;padding:30px;box-shadow:6px 6px 0 var(--border);text-align:center;position:relative}
+.guru-badge{position:absolute;top:16px;left:16px;background:var(--lime);color:var(--navy);font:800 10px var(--mono);padding:5px 10px;border:2px solid var(--navy);border-radius:8px;transform:rotate(-3deg)}
+.guru-card h3{font-size:22px;color:var(--text);margin-bottom:4px;letter-spacing:-.03em}
+.guru-card p.guru-birth{font-family:var(--mono);font-size:12px;color:var(--violet);font-weight:700;margin:0 0 18px}
+.guru-instansi{background:var(--surface-2);border:2px dashed var(--soft-border);border-radius:16px;padding:12px}
+.guru-instansi span{display:block;font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.guru-instansi strong{font-size:15px;color:var(--text)}
+
+.gamer-card{background:var(--violet);border:3px solid var(--navy);border-radius:26px;padding:30px;color:white;box-shadow:6px 6px 0 var(--navy);position:relative;overflow:hidden}.gamer-card h3{position:relative;z-index:1;color:white;font-size:23px}.gamer-card p{position:relative;z-index:1;color:rgba(255,255,255,.8);font-size:12px}.gamer-total{position:relative;z-index:1;display:inline-block;padding:16px 20px;background:var(--navy);border:2px solid white;border-radius:15px;margin:14px 0}.gamer-total small{display:block;font:700 10px var(--mono);color:var(--lime)}.gamer-total strong{display:block;font:700 3rem var(--mono);letter-spacing:-.1em;color:white}.gamer-id{position:relative;z-index:1;font:700 10px var(--mono);color:white}.achievement-box{padding:28px;border:2px solid var(--border);border-radius:22px;background:var(--surface)}.achievement-box h3{font-size:22px;margin-bottom:8px}.badge-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}.achievement{display:flex;align-items:center;gap:12px;border:2px solid var(--soft-border);border-radius:15px;padding:13px;background:var(--bg);opacity:.6;filter:grayscale(1); transition: 0.3s;}.achievement.unlocked{opacity:1;filter:none;border-color:var(--navy);background:var(--lime);color:var(--navy);box-shadow:3px 3px 0 var(--navy)}.achievement-icon{font-size:25px}.achievement strong{display:block;font-size:11px}.achievement small{display:block;font-size:10px;color:var(--muted)}.achievement.unlocked small{color:#424864}.review-box{margin-top:18px;padding:17px;border:2px dashed var(--soft-border);border-radius:14px}.review-box h4{margin-bottom:7px}.review-list{display:flex;flex-wrap:wrap;gap:7px}.review-chip{font-size:10px;font-weight:800;padding:6px 9px;border-radius:999px;background:var(--coral);color:white}
+
+@keyframes badgeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.08); box-shadow: 0 0 15px var(--lime); } 100% { transform: scale(1); } }
+
+/* Footer / toast */
+footer{padding:50px 0 30px;background:var(--navy);color:white;border-top:4px solid var(--lime); position: relative; z-index: 1;}.footer-grid{display:flex;align-items:flex-start;justify-content:space-between;gap:28px}.footer-brand{font-size:25px;font-weight:800;color:var(--lime);letter-spacing:-.06em}.footer-text{font-size:12px;color:#C6CAE4;max-width:440px}.footer-refs{max-width:520px;font-size:11px;color:#C6CAE4;line-height:1.8}.footer-refs strong{color:white}.footer-bottom{margin-top:30px;padding-top:17px;border-top:1px solid #434767;font:10px var(--mono);color:#A6ACCB;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.toast{position:fixed;z-index:1500;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;max-width:min(92vw,480px);padding:13px 18px;background:var(--navy);color:white;border:2px solid var(--lime);border-radius:13px;box-shadow:5px 5px 0 var(--lime);font-size:12px;font-weight:800;transition:opacity .25s,transform .25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1000px){.site-nav{gap:8px}.nav-link{padding:8px;font-size:11px}.xp-pill{display:none}.hero{grid-template-columns:1fr .85fr;gap:20px}.hero h1{font-size:clamp(2.8rem,6vw,4.6rem)}.mission-grid{grid-template-columns:repeat(2,1fr)}.cause-grid{grid-template-columns:repeat(3,1fr)}.flow-steps{grid-template-columns:repeat(3,1fr)}.achievement-layout{grid-template-columns:1fr 1fr}.achievement-box{grid-column:1 / -1}}
+@media(max-width:760px){.container{width:min(100% - 28px,650px)}.site-nav{top:10px;width:calc(100% - 18px);padding:6px 7px 6px 12px;gap:7px}.brand-name{font-size:13px}.brand-mark{width:29px;height:29px;flex-basis:29px}.nav-links{gap:1px}.nav-link{font-size:10px;padding:8px}.nav-actions{gap:5px}.theme-btn{width:31px;height:31px;flex-basis:31px;font-size:14px}.hero-shell{padding-top:88px}.hero{grid-template-columns:1fr;padding:31px 24px 36px;border-radius:25px;min-height:unset;gap:18px}.hero h1{font-size:clamp(2.6rem,11vw,4.4rem)}.hero-art{min-height:345px;margin-top:10px}.orbit{width:280px;height:280px}.question-panel{max-width:340px}.floating-sticker{right:0;top:5px}.section{padding:68px 0}.section-head{display:block}.section-aside{display:inline-block;margin-top:12px}.mission-grid{gap:10px}.mission-tile{padding:15px;min-height:155px}.mission-tile h3{font-size:14px}.snapshot-strip,.wb-strip{grid-template-columns:1fr}.snapshot-card{padding:20px}.concept-grid,.calc-layout,.percap-layout,.lorenz-layout,.policy-layout,.achievement-layout,.case-grid,.grid-2{grid-template-columns:1fr}.flow-steps{grid-template-columns:1fr 1fr}.cause-grid{grid-template-columns:1fr 1fr}.gini-control,.lorenz-visual,.calc-box,.concept-card{padding:21px}.calc-intro{padding:24px}.footer-grid{display:block}.footer-refs{margin-top:25px}.policy-console{padding:21px}.badge-grid{grid-template-columns:1fr 1fr}.achievement-box{grid-column:auto}}
+@media(max-width:420px){.container{width:calc(100% - 22px)}.brand-name{display:none}.nav-brand{padding-right:8px}.nav-link{font-size:9px;padding:7px 8px}.site-nav{justify-content:space-between}.hero{padding:28px 18px}.hero-actions .btn{width:100%}.mission-grid{grid-template-columns:1fr 1fr}.mission-tile{min-height:165px}.cause-grid{grid-template-columns:1fr}.cause-card{min-height:unset}.input-grid{grid-template-columns:1fr}.flow-steps{grid-template-columns:1fr}.quiz-top{align-items:flex-start}.quiz-bottom{align-items:stretch;flex-direction:column}.quiz-bottom .btn{width:100%}.fc-controls{flex-direction:column}.budget-row{align-items:flex-start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* ===== PERBAIKAN & TAMBAHAN ===== */
+.logo{display:block;width:32px;height:32px;flex:0 0 auto}
+.brand-mark{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;background:none;border:0;transform:none}
+.maker-avatar{width:42px;height:42px;display:grid;place-items:center;flex:0 0 42px;background:none;border:0;transform:none}
+.maker-avatar .logo{width:42px;height:42px}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-brand .logo{width:30px;height:30px}
+.gamer-card:after{content:none}
+.tag-sim{font:700 10px var(--mono);color:var(--muted);white-space:nowrap;background:var(--surface);padding:6px 10px;border-radius:6px;border:1px solid var(--soft-border)}
+.sticker{display:inline-block;font:800 10px var(--mono);background:var(--lime);color:var(--navy);border:2px solid var(--navy);border-radius:8px;padding:5px 8px;margin-bottom:14px;transform:rotate(-2deg)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.flashcard-container{perspective:1200px;margin-bottom:14px;cursor:pointer;outline:none}
+.flashcard{position:relative;min-height:300px;transition:transform .6s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.flashcard.is-flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:30px;border:2px solid var(--border);border-radius:22px;box-shadow:6px 6px 0 var(--border);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.card-front{background:var(--violet);color:white;align-items:center;text-align:center}
+.card-front h3{color:white;font-size:2.4rem;letter-spacing:-.05em}
+.card-front p{color:rgba(255,255,255,.85);font-size:12px}
+.card-back{background:var(--lime);color:var(--navy);transform:rotateY(180deg)}
+.card-back h4{color:var(--navy);font-size:20px}
+.card-back p{color:var(--navy);font-size:13px;font-weight:600}
+.fc-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.guru-avatar-wrap{width:110px;height:110px;margin:15px auto}
+.guru-avatar,.guru-avatar-fallback{width:110px;height:110px;border-radius:50%;border:3px solid var(--navy);box-shadow:4px 4px 0 var(--navy);display:block;object-fit:cover;background:var(--surface-2)}
+.guru-avatar-fallback{display:none;align-items:center;justify-content:center;background:var(--lime)}
+.guru-avatar-fallback .logo{width:72px;height:72px}
+
+/* ===== KONTAK FOOTER ===== */
+.footer-contact{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.contact-chip{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border:2px solid #434767;border-radius:999px;background:rgba(255,255,255,.05);color:white;font-size:12px;font-weight:700;transition:transform .18s,border-color .18s,background .18s}
+.contact-chip:hover{transform:translate(-2px,-2px);border-color:var(--lime);background:rgba(215,255,100,.08)}
+.contact-chip small{display:block;font:700 9px var(--mono);color:var(--lime);text-transform:uppercase;letter-spacing:.06em;line-height:1.2}
+.contact-chip span{line-height:1.3}
+.contact-icon{width:32px;height:32px;flex:0 0 32px;display:block}
+
+/* ===== FORM REFLEKSI ===== */
+.reflection-status{font-size:12px;margin:14px 0 0;min-height:1em;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- Definisi logo (dipakai ulang di seluruh halaman) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <defs>
+  <symbol id="eco-mark" viewBox="0 0 32 32">
+   <rect x="1" y="1" width="30" height="30" rx="9" fill="#655BFF" stroke="#202344" stroke-width="2"/>
+   <rect x="6.5" y="18" width="4.5" height="9" rx="1.2" fill="#D7FF64" stroke="#202344" stroke-width="1.6"/>
+   <rect x="13.75" y="13" width="4.5" height="14" rx="1.2" fill="#FF6384" stroke="#202344" stroke-width="1.6"/>
+   <rect x="21" y="8" width="4.5" height="19" rx="1.2" fill="#05CD99" stroke="#202344" stroke-width="1.6"/>
+   <circle cx="24.5" cy="6.5" r="3.6" fill="#FFD45C" stroke="#202344" stroke-width="1.6"/>
+  </symbol>
+  <linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0">
+   <stop offset="0" stop-color="#FFD45C"/>
+   <stop offset=".45" stop-color="#FF6384"/>
+   <stop offset="1" stop-color="#655BFF"/>
+  </linearGradient>
+  <symbol id="icon-mail" viewBox="0 0 32 32">
+   <rect x="1" y="1" width="30" height="30" rx="9" fill="#D7FF64" stroke="#202344" stroke-width="2"/>
+   <rect x="7" y="10" width="18" height="13" rx="2" fill="none" stroke="#202344" stroke-width="2"/>
+   <path d="M7.5 11 L16 17.5 L24.5 11" fill="none" stroke="#202344" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="icon-ig" viewBox="0 0 32 32">
+   <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#ig-grad)" stroke="#202344" stroke-width="2"/>
+   <rect x="7.5" y="7.5" width="17" height="17" rx="5" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+   <circle cx="16" cy="16" r="4.2" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+   <circle cx="21.3" cy="10.7" r="1.2" fill="#FFFFFF"/>
+  </symbol>
+  <symbol id="icon-wa" viewBox="0 0 32 32">
+   <circle cx="16" cy="16" r="14.5" fill="#25D366" stroke="#202344" stroke-width="2"/>
+   <circle cx="16" cy="16" r="9.5" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+   <path transform="translate(9.5 9.5) scale(0.5)" fill="#FFFFFF" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+  </symbol>
+ </defs>
+</svg>
+
+<!-- Animated Background Orbs -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<a class="skip-link" href="#main">Lewati ke materi</a>
+<div class="scroll-progress" id="progressBar" aria-hidden="true"></div>
+<nav class="site-nav" aria-label="Navigasi utama">
+ <a class="brand" href="#home" aria-label="EcoFiCation beranda"><span class="brand-mark"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><use href="#eco-mark" width="32" height="32"/></svg></span><span class="brand-name">EcoFiCation</span></a>
+ <div class="nav-links">
+  <a class="nav-link active" href="#home">Home</a><a class="nav-link" href="#quest">Quest</a><a class="nav-link" href="#flashcards">Cards</a><a class="nav-link" href="#materi">Materi</a><a class="nav-link" href="#calc">Lab Hitung</a><a class="nav-link" href="#gini">Gini Lab</a><a class="nav-link" href="#policy">Policy</a><a class="nav-link" href="#boss">Boss</a><a class="nav-link" href="#profile">Profile</a>
+ </div>
+ <div class="nav-actions"><div class="xp-pill">XP <span id="navXP">0</span></div><button class="theme-btn" id="themeToggle" type="button" aria-label="Ganti tema" title="Ganti tema">☾</button></div>
+</nav>
+<main id="main">
+<header class="hero-shell" id="home">
+ <div class="container">
+  <div class="hero">
+   <div class="hero-copy">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> Economics lab · Pendapatan Nasional & Kesenjangan</div>
+    <h1>Ekonomi naik.<br><span class="highlight">Semua ikut maju?</span></h1>
+    <p>Bedah konsep pendapatan nasional, hitung pendapatan per kapita, analisis ketimpangan distribusi pendapatan, dan rancang solusi kebijakan mengatasi kesenjangan ekonomi.</p>
+    <div class="hero-actions"><a class="btn btn-lime" href="#quest">Gas Mulai ↗</a><a class="btn btn-white" href="#materi">Explore Materi ↓</a></div>
+    <div class="hero-maker"><div class="maker-avatar"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><use href="#eco-mark" width="32" height="32"/></svg></div><div class="maker-meta"><strong>Fajar Rafi Milsi</strong><span>EcoFiCation · Interactive Economics Learning</span></div></div>
+   </div>
+   <div class="hero-art" aria-label="Ilustrasi pertumbuhan ekonomi dan distribusi pendapatan">
+    <div class="orbit" aria-hidden="true"></div><div class="floating-sticker">THINK DIFFERENT<br>THINK ECONOMICS</div>
+    <div class="question-panel">
+     <div class="panel-top"><span>◉ THE BIG QUESTION</span><span class="live-tag">SIMULATION</span></div>
+     <div class="hero-bars" aria-label="Grafik batang ilustratif"><span class="hero-bar" style="height:42%"></span><span class="hero-bar" style="height:66%"></span><span class="hero-bar" style="height:80%"></span><span class="hero-bar" style="height:56%"></span><span class="hero-bar" style="height:92%"></span></div>
+     <div class="chart-legend"><span>OUTPUT ↗</span><span>WHO BENEFITS?</span></div>
+     <h2>PDB naik, tapi siapa yang benar-benar ikut sejahtera?</h2>
+     <p>Pertumbuhan mengukur perubahan output. Pemerataan perlu dilihat dari distribusi pendapatan, akses, dan kondisi masyarakat.</p>
+    </div>
+   </div>
+  </div>
+ </div>
+</header>
+
+<section class="section" id="quest">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Your learning path / 00</div><h2 class="section-title">Pilih misi.<br>Naikkan level.</h2><p class="section-desc">Ikuti alurnya dari konsep dasar sampai mengambil keputusan. Progress dan XP disimpan di browser perangkat ini, bukan ke server.</p></div><div class="section-aside">6 MINDS-ON STEPS →</div></div>
+  <div class="mission-grid">
+   <a class="mission-tile" href="#materi"><span class="mission-num">MISSION 01</span><div class="mission-icon">🧩</div><h3>Decode the Economy</h3><p>Kenali 6 konsep pendapatan nasional dari PDB hingga DI.</p></a>
+   <a class="mission-tile" href="#calc"><span class="mission-num">MISSION 02</span><div class="mission-icon">🧮</div><h3>Follow the Money</h3><p>Coba 3 pendekatan menghitung pendapatan nasional & per kapita.</p></a>
+   <a class="mission-tile" href="#gini"><span class="mission-num">MISSION 03</span><div class="mission-icon">📉</div><h3>Spot the Gap</h3><p>Analisis penyebab kesenjangan, Kurva Lorenz, Gini, & Bank Dunia.</p></a>
+   <a class="mission-tile" href="#policy"><span class="mission-num">MISSION 04</span><div class="mission-icon">🏛️</div><h3>Fix the Gap</h3><p>Terapkan solusi Pendidikan, Infrastruktur, dan Subsidi.</p></a>
+  </div>
+  <div class="callout"><strong>🗺️ Heads-up</strong><p>Data di simulator sengaja dibuat untuk latihan, bukan angka statistik Indonesia saat ini. Kita belajar membaca hubungan antarkonsep tanpa menyamaratakan model dengan realitas.</p></div>
+ </div>
+</section>
+
+<section class="section" id="flashcards">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Warm-up / 00B</div><h2 class="section-title">Swipe to understand.</h2><p class="section-desc">Tap kartu untuk membalik. Tandai “perlu review” atau “sudah paham” agar kamu tahu bagian yang perlu diulang.</p></div><span class="tag-sim">5 KEY CONCEPTS</span></div>
+  <div class="grid-2">
+   <div>
+    <div class="flashcard-container" id="flashcardTap" tabindex="0" role="button" aria-label="Balik flashcard">
+     <div class="flashcard" id="fc-card">
+      <div class="card-face card-front"><h3 id="fc-front">PDB / GDP</h3><p style="margin-top:14px">Tap untuk membalik ↻</p></div>
+      <div class="card-face card-back"><h4 id="fc-title" style="margin-bottom:13px">Produk Domestik Bruto</h4><p id="fc-back"></p></div>
+     </div>
+    </div>
+    <div class="fc-controls"><button class="btn btn-coral" id="reviewCard" type="button">Perlu review ✕</button><button class="btn btn-lime" id="knowCard" type="button">Sudah paham ✓</button></div>
+    <p id="fc-progress" style="text-align:center;font:700 11px var(--mono);margin:16px 0 0">Kartu 1 / 5</p>
+   </div>
+   <div class="concept-card"><div class="concept-top"><span class="concept-index">HOW TO USE</span><span class="concept-symbol">🧠</span></div><h3>Belajar aktif, bukan cuma scroll.</h3><p>Coba jawab konsepnya di kepala sebelum membalik kartu. Jika belum yakin, tandai untuk di-review. Menyelesaikan seluruh kartu memberikan reward satu kali.</p><div class="definition-note">Poin flashcard: +50 XP setelah semua kartu dilalui, maksimal sekali untuk satu progres tersimpan.</div></div>
+  </div>
+ </div>
+</section>
+
+<section class="section alt" id="snapshot">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Quick scan / 01</div><h2 class="section-title">Ekonomi dalam 3 lensa.</h2><p class="section-desc">Satu indikator saja nggak cukup untuk membaca kesejahteraan. Bedakan ukuran output, rata-rata, dan pemerataan.</p></div><span class="tag-sim">CONCEPT SNAPSHOT</span></div>
+  <div class="snapshot-strip">
+   <article class="snapshot-card"><div class="stat-label">01 / Output</div><div class="stat-big">PDB</div><p>Nilai barang dan jasa akhir yang diproduksi di dalam wilayah suatu negara dalam periode tertentu.</p></article>
+   <article class="snapshot-card"><div class="stat-label">02 / Average</div><div class="stat-big">Per kapita</div><p>Ukuran rata-rata per orang. Angka rata-rata tidak memberi tahu pembagian pendapatan setiap individu.</p></article>
+   <article class="snapshot-card"><div class="stat-label">03 / Distribution</div><div class="stat-big">Gini</div><p>Koefisien untuk menggambarkan ketimpangan distribusi pendapatan. Nilai mendekati 0 berarti lebih merata.</p></article>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="materi">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Core concepts / 02</div><h2 class="section-title">6 Konsep Pendapatan Nasional.</h2><p class="section-desc">Pendapatan nasional adalah total pendapatan yang diterima seluruh rumah tangga keluarga (RTK) atau nilai produksi barang dan jasa suatu negara dalam kurun waktu satu tahun.</p></div><div class="section-aside">6 KONSEP UTAMA</div></div>
+  <div class="concept-grid">
+   <article class="concept-card featured"><div class="concept-top"><span class="concept-index">01 / PDB (GDP)</span><span class="concept-symbol">🏭</span></div><h3>Produk Domestik Bruto</h3><p>Nilai total barang dan jasa yang diproduksi di <strong>dalam wilayah suatu negara</strong> selama satu tahun, baik oleh warga negara domestik maupun warga negara asing (WNA) di wilayah tersebut.</p><div class="definition-note"><strong>Fokus:</strong> Lokasi produksi di dalam wilayah negara (dihitung dengan pendekatan produksi, pendapatan, atau pengeluaran).</div></article>
+   <article class="concept-card"><div class="concept-top"><span class="concept-index">02 / PNB (GNP)</span><span class="concept-symbol">🌍</span></div><h3>Produk Nasional Bruto</h3><p>Nilai moneter dari output yang dihasilkan oleh <strong>warga negara (penduduk) suatu negara</strong>, baik yang berada di dalam negeri maupun di luar negeri, tanpa menghitung output WNA di dalam negeri.</p><div class="definition-note"><strong>Rumus:</strong> PNB = PDB + (PWNI − PWNA) <em>atau</em> PNB = PDB + PFPN</div></article>
+   <article class="concept-card"><div class="concept-top"><span class="concept-index">03 / PNN (NNP)</span><span class="concept-symbol">⚙️</span></div><h3>Produk Nasional Neto</h3><p>Nilai moneter dari Produk Nasional Bruto (PNB) setelah dikurangi dengan biaya penyusutan (depresiasi) atau penggantian barang modal selama proses produksi.</p><div class="definition-note"><strong>Rumus:</strong> PNN = PNB − Penyusutan (Depresiasi)</div></article>
+   <article class="concept-card"><div class="concept-top"><span class="concept-index">04 / PN (NNI)</span><span class="concept-symbol">📊</span></div><h3>Pendapatan Nasional Neto</h3><p>Produk Nasional Neto (PNN) dikurangi pajak tidak langsung (seperti PPN, cukai, materai) dan ditambah subsidi karena subsidi merupakan balas jasa faktor produksi.</p><div class="definition-note"><strong>Rumus:</strong> PN = PNN − Pajak Tidak Langsung + Subsidi</div></article>
+   <article class="concept-card"><div class="concept-top"><span class="concept-index">05 / PP (PI)</span><span class="concept-symbol">👥</span></div><h3>Pendapatan Perseorangan</h3><p>Semua pendapatan yang benar-benar diterima oleh individu atau rumah tangga secara kolektif, termasuk pembayaran pindahan (<em>transfer payment</em>), setelah dikurangi komponen yang ditahan.</p><div class="definition-note"><strong>Rumus:</strong> PI = PN − (Laba Ditahan + Iuran Asuransi + Jaminan Sosial + Pajak Perseroan) + Transfer Payment</div></article>
+   <article class="concept-card"><div class="concept-top"><span class="concept-index">06 / PD (DI)</span><span class="concept-symbol">💳</span></div><h3>Pendapatan Disposabel</h3><p>Pendapatan perseorangan yang siap digunakan oleh masyarakat (baik untuk konsumsi membeli barang/jasa maupun ditabung) setelah dikurangi pajak langsung (seperti PPh, PBB, PKB).</p><div class="definition-note"><strong>Rumus:</strong> PD (DI) = PI − Pajak Langsung</div></article>
+  </div>
+  <div class="flow-steps" aria-label="Rangkaian 6 konsep pendapatan nasional">
+   <div class="flow-step"><small>STEP 01</small><strong>PDB / GDP</strong><span>Produksi di dalam wilayah negara.</span></div>
+   <div class="flow-step"><small>STEP 02</small><strong>PNB / GNP</strong><span>PDB + (PWNI − PWNA).</span></div>
+   <div class="flow-step"><small>STEP 03</small><strong>PNN / NNP</strong><span>PNB − Penyusutan modal.</span></div>
+   <div class="flow-step"><small>STEP 04</small><strong>PN / NNI</strong><span>PNN − Pajak tak langsung + Subsidi.</span></div>
+   <div class="flow-step"><small>STEP 05</small><strong>PP / PI</strong><span>PN − Komponen ditahan + Transfer.</span></div>
+   <div class="flow-step"><small>STEP 06</small><strong>PD / DI</strong><span>PI − Pajak langsung (siap pakai).</span></div>
+  </div>
+  <div class="callout"><strong>🎯 Tujuan & Manfaat Penghitungan Pendapatan Nasional</strong><p>Menghitung pendapatan nasional bermanfaat untuk: <strong>(1)</strong> mengetahui struktur perekonomian negara (agraris, industri, atau jasa), <strong>(2)</strong> mengetahui tingkat pertumbuhan perekonomian dari waktu ke waktu, <strong>(3)</strong> membandingkan perekonomian antardaerah atau antarnegara, dan <strong>(4)</strong> membantu pemerintah merumuskan kebijakan pembangunan.</p></div>
+ </div>
+</section>
+
+<section class="section alt" id="calc">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Hands-on lab / 03</div><h2 class="section-title">Follow the money.</h2><p class="section-desc">Secara teori, pendapatan nasional dapat dihitung melalui pendekatan produksi, penerimaan, dan pengeluaran. Ketiganya melihat aktivitas ekonomi dari sisi yang berbeda.</p></div><div class="section-aside">EDIT INPUT → SEE RESULT</div></div>
+  <div class="calc-layout">
+   <aside class="calc-intro"><span class="sticker">LAB MODE: ON</span><h3>Tiga jalan.<br>Satu gambaran ekonomi.</h3><p>Produksi menciptakan pendapatan; pendapatan mendorong pengeluaran; pengeluaran menjadi permintaan untuk produksi. Masukkan angka simulasi dan perhatikan rumusnya.</p><div class="formula-chip">SIMULATED VALUES ONLY</div></aside>
+   <div class="calc-box">
+    <div class="tabs" role="tablist" aria-label="Metode penghitungan"><button class="tab active" role="tab" aria-selected="true" data-tab="expenditure" type="button">Pengeluaran</button><button class="tab" role="tab" aria-selected="false" data-tab="income" type="button">Penerimaan</button><button class="tab" role="tab" aria-selected="false" data-tab="production" type="button">Produksi</button></div>
+    <div class="calc-pane active" id="pane-expenditure" role="tabpanel"><div class="formula-display">Y = C + I + G + (X − M)</div><div class="input-grid"><div class="input-group"><label for="valC">Konsumsi (C), miliar Rp</label><input id="valC" type="number" min="0" value="500" step="10"></div><div class="input-group"><label for="valI">Investasi (I), miliar Rp</label><input id="valI" type="number" min="0" value="200" step="10"></div><div class="input-group"><label for="valG">Belanja pemerintah (G)</label><input id="valG" type="number" min="0" value="150" step="10"></div><div class="input-group"><label for="valX">Ekspor (X)</label><input id="valX" type="number" min="0" value="100" step="10"></div><div class="input-group"><label for="valM">Impor (M)</label><input id="valM" type="number" min="0" value="80" step="10"></div></div><button class="btn btn-dark" id="calcExpenditure" type="button">Hitung output ↗</button><p class="calc-help">Impor (M) dikurangkan karena barang/jasa impor bukan produksi dalam negeri.</p></div>
+    <div class="calc-pane" id="pane-income" role="tabpanel"><div class="formula-display">Y = w + r + i + p</div><div class="input-grid"><div class="input-group"><label for="valW">Upah (w), miliar Rp</label><input id="valW" type="number" min="0" value="400" step="10"></div><div class="input-group"><label for="valR">Sewa (r)</label><input id="valR" type="number" min="0" value="100" step="10"></div><div class="input-group"><label for="valInterest">Bunga modal (i)</label><input id="valInterest" type="number" min="0" value="150" step="10"></div><div class="input-group"><label for="valP">Laba (p)</label><input id="valP" type="number" min="0" value="250" step="10"></div></div><button class="btn btn-dark" id="calcIncome" type="button">Hitung penerimaan ↗</button><p class="calc-help">Pendekatan penerimaan menjumlahkan balas jasa faktor produksi: upah, sewa, bunga modal, dan laba.</p></div>
+    <div class="calc-pane" id="pane-production" role="tabpanel"><div class="formula-display">Output = Σ Nilai Tambah</div><p>Tujuannya menghindari penghitungan ganda pada setiap tahap produksi.</p><div class="input-grid"><div class="input-group"><label for="cotton">Nilai tambah kapas (Rp)</label><input id="cotton" type="number" min="0" value="10000" step="1000"></div><div class="input-group"><label for="yarn">Nilai tambah benang (Rp)</label><input id="yarn" type="number" min="0" value="15000" step="1000"></div><div class="input-group"><label for="fabric">Nilai tambah kain (Rp)</label><input id="fabric" type="number" min="0" value="25000" step="1000"></div><div class="input-group"><label for="clothes">Nilai tambah pakaian (Rp)</label><input id="clothes" type="number" min="0" value="30000" step="1000"></div></div><button class="btn btn-dark" id="calcProduction" type="button">Jumlahkan nilai tambah ↗</button><p class="calc-help">Contoh ilustratif dari tahapan kapas → benang → kain → pakaian (sesuai Tabel 1.1 buku).</p></div>
+    <div class="calc-result" id="calcResult" aria-live="polite"><div class="result-label" id="resultLabel">Hasil simulasi</div><div class="result-number" id="resultNumber"></div><div class="result-steps" id="resultSteps"></div></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="perkapita">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Average ≠ everyone / 04</div><h2 class="section-title">Pendapatan Per Kapita:<br>Rata-rata tinggi, kok masih ada gap?</h2><p class="section-desc">Pendapatan per kapita adalah ukuran pendapatan rata-rata penduduk di suatu negara atau daerah. Dihitung dengan membagi pendapatan nasional (PDB atau PNB) dengan jumlah penduduk.</p></div></div>
+  <div class="percap-layout">
+   <div class="percap-visual"><span class="tag-sim">RUMUS & FUNGSI</span><h3>Hitung rata-ratanya.</h3><p style="color:#3B4160">Pendapatan per kapita digunakan sebagai tolok ukur standar hidup, pembanding kesejahteraan antardaerah/negara, serta acuan produsen dalam menentukan sasaran pasar.</p><div class="equation">PDB/PNB Per Kapita = Pendapatan Nasional ÷ Jumlah Penduduk</div><p style="color:#3B4160;font-size:12px;margin:0"><strong>Klasifikasi Bank Dunia (GNI per kapita):</strong><br>• <em>Low income</em> (Pendapatan rendah)<br>• <em>Lower-middle income</em> (Menengah ke bawah)<br>• <em>Upper-middle income</em> (Menengah ke atas)<br>• <em>High income</em> (Pendapatan tinggi)</p></div>
+   <div class="percap-form"><h3>Try the numbers</h3><p style="font-size:12px">Ubah angka untuk melihat hasil rata-rata. Data berikut hanya simulasi.</p><div class="input-group"><label for="pdbTrillion">PDB (triliun rupiah)</label><input id="pdbTrillion" type="number" min="0.01" value="1200" step="50"></div><div class="input-group"><label for="populationMillion">Jumlah penduduk (juta orang)</label><input id="populationMillion" type="number" min="0.01" value="40" step="1"></div><div class="percap-output"><small>Estimasi rata-rata per orang per tahun</small><span id="perCapResult">Rp 30.000.000</span><small id="perCapHint">Rata-rata berdasarkan input simulasi.</small></div><div class="callout"><p>Rata-rata yang tinggi tidak otomatis membuktikan pemerataan atau menghapus kemiskinan. Lihat juga kondisi distribusi pendapatan dan akses kesempatan.</p></div></div>
+  </div>
+ </div>
+</section>
+
+<section class="section alt" id="gap">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Spot the gap / 05</div><h2 class="section-title">Penyebab Kesenjangan Ekonomi.</h2><p class="section-desc">Kesenjangan ekonomi adalah kondisi tidak seimbang dalam masyarakat berdasarkan aspek ekonomi (perbedaan kemampuan memperoleh pendapatan). Lima faktor penyebab utamanya saling berkaitan:</p></div><span class="tag-sim">5 PENYEBAB UTAMA</span></div>
+  <div class="cause-grid">
+   <article class="cause-card"><span class="cause-number">FACTOR 01</span><div class="cause-icon">🧭</div><h3>Kondisi demografi</h3><p>Jumlah, komposisi usia produktif, dan persebaran penduduk yang tidak merata antardaerah memengaruhi aktivitas dan peluang ekonomi.</p></article>
+   <article class="cause-card"><span class="cause-number">FACTOR 02</span><div class="cause-icon">🎓</div><h3>Kondisi pendidikan</h3><p>Perbedaan kualitas dan akses pendidikan memengaruhi kualitas SDM, keterampilan, mobilitas sosial, serta potensi penghasilan.</p></article>
+   <article class="cause-card"><span class="cause-number">FACTOR 03</span><div class="cause-icon">🛣️</div><h3>Pembangunan / Infrastruktur</h3><p>Ketidakmerataan pembangunan infrastruktur (jalan, pelabuhan, listrik) menghambat distribusi barang dan akses masyarakat ke pasar.</p></article>
+   <article class="cause-card"><span class="cause-number">FACTOR 04</span><div class="cause-icon">🧰</div><h3>Kurangnya lapangan kerja</h3><p>Keterbatasan ketersediaan lapangan kerja menimbulkan pengangguran sehingga sebagian masyarakat sulit memenuhi kebutuhan hidup.</p></article>
+   <article class="cause-card"><span class="cause-number">FACTOR 05</span><div class="cause-icon">💸</div><h3>Pendapatan tidak merata</h3><p>Perbedaan penguasaan sumber daya dan faktor produksi membuat distribusi pendapatan terkonsentrasi pada kelompok tertentu.</p></article>
+  </div>
+  <div class="case-grid" style="margin-top:24px">
+   <article class="case-card"><span class="case-label">CASE FILE / FICTIONAL</span><h3>Paradoks Kota Arunika</h3><p>Kota fiktif mengalami pertumbuhan output setelah pabrik besar dibangun. Namun, pekerjaan dengan upah tinggi hanya tersedia bagi sebagian orang, sementara nelayan setempat menghadapi penurunan hasil tangkapan akibat masalah lingkungan dalam skenario ini.</p><div class="flow">OUTPUT ↑  ≠  PENDAPATAN MERATA</div></article>
+   <article class="case-card"><span class="case-label">ANALYSIS MODE</span><h3>Jangan buru-buru menyimpulkan</h3><p>Kasus ini menggambarkan kemungkinan adanya ketimpangan. Untuk memastikan besarnya, kita memerlukan data distribusi pendapatan. Kurva Lorenz tidak bisa ditentukan secara pasti hanya dari sebuah cerita.</p><div class="flow">OBSERVASI → DATA → ANALISIS</div></article>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="gini">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Interactive data lab / 06</div><h2 class="section-title">Ketimpangan Pendapatan:<br>Lorenz, Gini & Bank Dunia.</h2><p class="section-desc">Tingkat ketimpangan distribusi pendapatan suatu negara diukur menggunakan tiga cara utama: Kurva Lorenz, Koefisien Gini (Rasio Gini), dan Kriteria Bank Dunia.</p></div><span class="tag-sim">3 INDIKATOR KETIMPANGAN</span></div>
+  <div class="lorenz-layout">
+   <div class="gini-control"><h3>Adjust the gap (Rasio Gini)</h3><p style="font-size:12px">Koefisien Gini berkisar dari 0 (pemerataan sempurna) hingga 1 (ketimpangan sempurna). Geser slider untuk melihat perubahan Kurva Lorenz.</p><div class="gini-number" id="giniValue">0.38</div><span class="gini-badge" id="giniBadge">Ilustrasi: ketimpangan moderat</span><input class="gini-range" id="giniSlider" type="range" min="0" max="0.95" step="0.01" value="0.38" aria-label="Nilai Gini ilustratif"><div class="scale-labels"><span>0 · Merata Sempurna</span><span>1 · Timpang Sempurna</span></div><p id="giniDescription" class="gini-note">Nilai ini hanya simulasi pembelajaran, bukan data wilayah tertentu.</p></div>
+   <div class="lorenz-visual"><h3>Kurva Lorenz</h3><p style="font-size:12px">Menunjukkan hubungan antara persentase kumulatif penduduk dan persentase pendapatan. Semakin jauh kurva melengkung dari garis diagonal, semakin tinggi ketimpangannya.</p><canvas id="lorenzCanvas" width="640" height="460" role="img" aria-label="Ilustrasi Kurva Lorenz dengan garis pemerataan sempurna dan distribusi pendapatan simulasi"></canvas><div class="legend"><span><i></i> Garis pemerataan sempurna (Diagonal)</span><span><i class="curve-key"></i> Kurva Lorenz simulasi</span></div></div>
+  </div>
+  <div class="wb-strip" aria-label="Kriteria Ketimpangan Bank Dunia">
+   <div class="wb-card"><small>KRITERIA BANK DUNIA · 01</small><strong>Ketimpangan Tinggi</strong><p>Jika kelompok <strong>40% penduduk termiskin</strong> memperoleh pendapatan <strong>&lt; 12%</strong> dari total pendapatan nasional.</p></div>
+   <div class="wb-card"><small>KRITERIA BANK DUNIA · 02</small><strong>Ketimpangan Sedang</strong><p>Jika kelompok <strong>40% penduduk termiskin</strong> memperoleh pendapatan <strong>12% – 17%</strong> dari total pendapatan nasional.</p></div>
+   <div class="wb-card"><small>KRITERIA BANK DUNIA · 03</small><strong>Ketimpangan Rendah</strong><p>Jika kelompok <strong>40% penduduk termiskin</strong> memperoleh pendapatan <strong>&gt; 17%</strong> dari total pendapatan nasional.</p></div>
+  </div>
+  <div class="callout"><strong>Catatan interpretasi</strong><p>Simulasi grafik di atas menggunakan bentuk kurva matematis ilustratif yang dikendalikan oleh nilai Gini (&lt; 0,3 rendah; 0,3–0,5 sedang/moderat; &gt; 0,5 tinggi). Ini bukan hasil perhitungan data rumah tangga nyata.</p></div>
+ </div>
+</section>
+
+<section class="section alt" id="policy">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Decision lab / 07</div><h2 class="section-title">Solusi Mengatasi Kesenjangan Ekonomi.</h2><p class="section-desc">Solusi mengatasi kesenjangan ekonomi berangkat dari akar penyebabnya, terutama melalui pemerataan Pendidikan, pembangunan Infrastruktur, pemberian Subsidi tepat sasaran, dan perluasan lapangan kerja. Kelola anggaran simulasi Rp500 triliun berikut!</p></div><span class="tag-sim">SOLUSI KEBIJAKAN</span></div>
+  <div class="policy-layout">
+   <div class="policy-list" id="policyList">
+    <button type="button" class="policy-option" data-id="infrastructure" data-cost="200" data-benefit="Memperbaiki konektivitas antardaerah (jalan, jembatan, pelabuhan) sehingga memperlancar distribusi barang dan menekan biaya logistik." aria-pressed="false"><span class="policy-emoji">🛣️</span><span class="policy-name"><strong>Pembangunan Infrastruktur Merata</strong><small>Jalan, jembatan, pelabuhan, & konektivitas distribusi barang</small></span><span class="policy-cost">Rp200 T</span></button>
+    <button type="button" class="policy-option" data-id="education" data-cost="150" data-benefit="Meningkatkan kualitas SDM secara merata hingga ke pelosok agar masyarakat memiliki keterampilan untuk memperoleh pekerjaan layak." aria-pressed="false"><span class="policy-emoji">🎓</span><span class="policy-name"><strong>Pemerataan Kualitas Pendidikan</strong><small>Sarana sekolah merata, akses buku, & peningkatan mutu SDM</small></span><span class="policy-cost">Rp150 T</span></button>
+    <button type="button" class="policy-option" data-id="social" data-cost="100" data-benefit="Meningkatkan daya beli dan produktivitas masyarakat melalui bantuan langsung maupun subsidi modal alat usaha yang tepat sasaran." aria-pressed="false"><span class="policy-emoji">🤝</span><span class="policy-name"><strong>Pemberian Subsidi Tepat Sasaran</strong><small>Bantuan langsung & subsidi modal alat produksi bagi masyarakat</small></span><span class="policy-cost">Rp100 T</span></button>
+    <button type="button" class="policy-option" data-id="jobs" data-cost="120" data-benefit="Mendorong penciptaan lapangan kerja dan akses usaha produktif agar menyerap tenaga kerja serta mengurangi pengangguran." aria-pressed="false"><span class="policy-emoji">🧰</span><span class="policy-name"><strong>Perluasan Lapangan Kerja & UMKM</strong><small>Penciptaan kesempatan kerja & dukungan usaha daerah</small></span><span class="policy-cost">Rp120 T</span></button>
+   </div>
+   <aside class="policy-console"><h3>Budget console</h3><p>Pilih kombinasi solusi kebijakan sesuai anggaran yang tersedia. Sinergi pemerintah dan masyarakat diperlukan agar solusi berjalan efektif.</p><div class="budget-row"><span class="result-label">SISA APBN SIMULASI</span><span class="budget-number">Rp <span id="budgetValue">500</span> T</span></div><div class="budget-bar"><div class="budget-fill" id="budgetFill"></div></div><div class="log-title">// DECISION LOG</div><div class="policy-log" id="policyLog" aria-live="polite">[SYSTEM] Simulasi dimulai. Anggaran tersedia: Rp500 T.</div><div class="policy-actions"><button class="btn btn-lime" type="button" id="evaluatePolicy">Evaluasi paket ↗</button><button class="btn btn-white" type="button" id="resetPolicy">Reset ↻</button></div><div class="policy-result" id="policyResult" aria-live="polite"></div></aside>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="boss">
+ <div class="container quiz-layout">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Final challenge / 08</div><h2 class="section-title">Economy boss battle.</h2><p class="section-desc">Lima pertanyaan untuk menguji konsep. XP quiz diberikan satu kali pada penyelesaian pertama, supaya tombol ulang bukan jadi cara mengumpulkan poin tanpa batas.</p></div><span class="tag-sim">5 QUESTIONS</span></div>
+  <div class="quiz-box" id="quizContainer">
+   <div class="quiz-top"><span class="quest-number">QUEST <span id="qNum">01</span> / 05</span><span class="quiz-reward">UP TO +100 XP</span></div><div class="quiz-track"><div class="quiz-track-fill" id="quizProgress"></div></div><h3 class="quiz-question" id="qText">Loading challenge...</h3><div class="quiz-options" id="qOptions"></div><div class="quiz-feedback" id="qFeedback" aria-live="polite"></div><div class="quiz-bottom"><span id="qHint" style="font-size:11px;color:var(--muted)">Pilih satu jawaban terbaik.</span><button class="btn btn-dark" id="qNext" type="button" style="display:none">Next quest →</button></div>
+   <div class="quiz-result" id="quizResult"><div class="section-kicker">MISSION RESULT</div><div class="quiz-score" id="quizScore">0/5</div><h3 id="quizResultTitle">Challenge complete</h3><p id="quizResultText"></p><button type="button" class="btn btn-lime" id="retryQuiz">Latihan lagi ↻</button></div>
+  </div>
+ </div>
+</section>
+
+<section class="section alt" id="profile">
+ <div class="container">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Instructor &amp; Progress / 09</div><h2 class="section-title">Profil Guru &amp; Progress.</h2><p class="section-desc">Mengenal lebih dekat instruktur di balik EcoFiCation dan pantau pencapaian belajarmu secara lokal.</p></div></div>
+  <div class="achievement-layout">
+   <div class="guru-card">
+    <div class="guru-badge">INSTRUCTOR</div>
+    <div class="guru-avatar-wrap">
+     <img src="https://drive.google.com/thumbnail?id=1dWc8d6ThQVdLu8hgxE3TdQBakYGcYLYU&sz=w500" alt="Foto Fajar Rafi Milsi" class="guru-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+     <div class="guru-avatar-fallback" role="img" aria-label="Foto belum tersedia"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><use href="#eco-mark" width="32" height="32"/></svg></div>
+    </div>
+    <h3>Fajar Rafi Milsi</h3>
+    <p class="guru-birth">Mahasiswa Pendidikan Ekonomi</p>
+    <div class="guru-instansi">
+     <span>Sekolah Tempat Mengajar</span>
+     <strong>SMAN 4 Sungai Raya</strong>
+    </div>
+    <div class="guru-instansi" style="margin-top:10px">
+     <span>Universitas</span>
+     <strong>Universitas Tanjungpura</strong>
+     <small style="display:block;font-size:11px;color:var(--muted);margin-top:2px">FKIP · Program Studi Pendidikan Ekonomi</small>
+    </div>
+   </div>
+
+   <div class="gamer-card"><h3>EcoFiCation<br>Learning Card</h3><p>Economics, but make it click.</p><div class="gamer-total"><small>TOTAL EXPERIENCE</small><strong id="finalXP">0</strong></div><p>Created for curious minds.</p><div class="gamer-id">ID: <span id="userID">ECO-0000</span></div></div>
+
+   <div class="achievement-box"><h3>Your achievement shelf</h3><p style="font-size:12px">Mulai terkunci. Selesaikan aktivitas untuk membukanya.</p><div class="badge-grid"><div class="achievement" id="badgeFlash"><span class="achievement-icon">🃏</span><span><strong>Card Collector</strong><small>Review semua flashcard</small></span></div><div class="achievement" id="badgePolicy"><span class="achievement-icon">🏛️</span><span><strong>Policy Thinker</strong><small>Evaluasi paket kebijakan</small></span></div><div class="achievement" id="badgeQuiz"><span class="achievement-icon">🧠</span><span><strong>Boss Challenger</strong><small>Selesaikan quiz</small></span></div><div class="achievement" id="badgeMaster"><span class="achievement-icon">🏆</span><span><strong>Economy Master</strong><small>Kumpulkan 200 XP</small></span></div></div><div class="review-box"><h4>Flashcards untuk di-review</h4><div class="review-list" id="reviewList"><span style="font-size:11px;color:var(--muted)">Belum ada kartu yang ditandai.</span></div></div><button type="button" class="small-btn" id="clearProgress" style="margin-top:16px">Reset progres lokal</button></div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="reflection">
+ <div class="container" style="max-width:850px">
+  <div class="section-head"><div class="section-head-copy"><div class="section-kicker">Exit ticket / 10</div><h2 class="section-title">Before you dip...</h2><p class="section-desc">Isi data dan jawab tiga pertanyaan refleksi. Jawabanmu beserta total experience akan terkirim ke guru.</p></div></div>
+  <form class="concept-card" id="reflectionForm">
+   <div class="input-grid">
+    <div class="input-group"><label for="rfNama">Nama lengkap</label><input id="rfNama" type="text" required maxlength="80" placeholder="Contoh: Budi Santoso"></div>
+    <div class="input-group"><label for="rfKelas">Kelas</label><input id="rfKelas" type="text" required maxlength="30" placeholder="Contoh: XI IPS 1"></div>
+   </div>
+   <div class="input-group"><label for="rfEmail">Email aktif</label><input id="rfEmail" type="email" required maxlength="120" placeholder="nama@email.com"></div>
+   <div class="input-group"><label for="reflection1">1. Apa perbedaan utama PDB dan PNB?</label><textarea id="reflection1" rows="3" required maxlength="1000" placeholder="Tulis jawabanmu..."></textarea></div>
+   <div class="input-group"><label for="reflection2">2. Mengapa pendapatan per kapita tidak cukup untuk menilai pemerataan?</label><textarea id="reflection2" rows="3" required maxlength="1000" placeholder="Jelaskan dengan kata-katamu sendiri..."></textarea></div>
+   <div class="input-group"><label for="reflection3">3. Faktor kesenjangan ekonomi mana yang paling terlihat di lingkunganmu, dan apa alasannya?</label><textarea id="reflection3" rows="3" required maxlength="1000" placeholder="Hubungkan materi dengan observasi atau contoh..."></textarea></div>
+   <div class="input-group"><label for="rfXP">Total experience kamu (otomatis)</label><input id="rfXP" type="text" readonly value="0 XP"></div>
+   <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <button type="submit" class="btn btn-dark" id="submitReflection">Kirim refleksi ↗</button>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfIYAVXg_GfwL043ZFevMzOZar8oD-FgYdKsIGNZZOdWE7BdQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="btn btn-lime">Link GForm Pengumpulan ↗</a>
+   </div>
+   <p id="reflectionStatus" class="reflection-status" role="status" aria-live="polite"></p>
+  </form>
+ </div>
+</section>
+</main>
+<footer><div class="container"><div class="footer-grid"><div><div class="footer-brand"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><use href="#eco-mark" width="32" height="32"/></svg>EcoFiCation.</div><p class="footer-text">Interactive Economics Playground. Belajar konsep ekonomi melalui visualisasi, perhitungan, analisis kasus, dan pengambilan keputusan.</p><p class="footer-text">Dikembangkan sebagai media pembelajaran oleh Fajar Rafi Milsi.</p>
+<div class="footer-contact" aria-label="Kontak">
+ <a class="contact-chip" href="mailto:fajarrafi04@gmail.com"><svg class="contact-icon" viewBox="0 0 32 32" aria-hidden="true"><use href="#icon-mail"/></svg><span><small>Email</small>fajarrafi04@gmail.com</span></a>
+ <a class="contact-chip" href="https://www.instagram.com/lolpional" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 32 32" aria-hidden="true"><use href="#icon-ig"/></svg><span><small>Instagram</small>@lolpional</span></a>
+ <a class="contact-chip" href="https://wa.me/6285138276757" target="_blank" rel="noopener noreferrer"><svg class="contact-icon" viewBox="0 0 32 32" aria-hidden="true"><use href="#icon-wa"/></svg><span><small>WhatsApp</small>0851-3827-6757</span></a>
+</div></div><div class="footer-refs"><strong>Referensi materi</strong><br>Nurjanah, A., &amp; Fitriani, Y. (2024). <em>Ekonomi untuk SMA/MA Kelas XI (Edisi Revisi)</em>. Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. Bab I: Pertumbuhan Ekonomi dan Kemiskinan (bagian A: Pendapatan Nasional; bagian C: Kesenjangan Ekonomi).<br><br>Fitriani, Y., &amp; Nurjanah, A. (2022). <em>Ekonomi untuk SMA Kelas XI</em>. Pusat Perbukuan, Kemendikbudristek. Bab 2: Pendapatan Nasional dan Kesenjangan Ekonomi.</div></div><div class="footer-bottom"><span>© EcoFiCation · Educational prototype</span><span>SIMULATION ≠ OFFICIAL STATISTICS</span></div></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+const $ = (selector, root=document) => root.querySelector(selector);
+const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
+const STORAGE_KEY = 'ecofication_state_v3';
+const defaultState = {xp:0,flashcardsDone:false,policyDone:false,quizRewarded:false,quizBest:0,reviewedCards:[],masterId:''};
+let state = {...defaultState};
+let toastTimer;
+
+function toast(message){
+  const el=$('#toast');
+  el.textContent=message;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+function loadState(){
+  try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(saved&&typeof saved==='object')state={...defaultState,...saved};}catch(e){console.info('Penyimpanan lokal tidak tersedia.');}
+  if(!state.masterId)state.masterId='ECO-'+Math.floor(1000+Math.random()*9000);
+  state.reviewedCards=Array.isArray(state.reviewedCards)?state.reviewedCards:[];
+  syncStateUI(true);
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}
+}
+
+function saveState(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){console.info('LocalStorage tidak tersedia.');}
+  syncStateUI(false);
+}
+
+function addXP(amount){
+  state.xp=Math.max(0,Number(state.xp)||0)+amount;
+  saveState();
+  const pill=$('.xp-pill');
+  if(pill){
+    pill.style.background='var(--lime)';
+    setTimeout(()=>pill.style.background='',450);
+  }
+}
+
+// silent = true saat halaman pertama kali dibuka: badge yang sudah terbuka tidak memunculkan popup lagi
+function syncStateUI(silent=false){
+  $('#navXP').textContent=state.xp;
+  $('#finalXP').textContent=state.xp;
+  $('#userID').textContent=state.masterId||'ECO-0000';
+  const xpField=$('#rfXP');
+  if(xpField)xpField.value=(Number(state.xp)||0)+' XP';
+
+  const badges = [
+    ['badgeFlash', state.flashcardsDone, 'Card Collector 🃏'],
+    ['badgePolicy', state.policyDone, 'Policy Thinker 🏛️'],
+    ['badgeQuiz', state.quizRewarded || state.quizBest > 0, 'Boss Challenger 🧠'],
+    ['badgeMaster', state.xp >= 200, 'Economy Master 🏆']
+  ];
+
+  badges.forEach(([id, yes, name]) => {
+    const el = $('#'+id);
+    const wasUnlocked = el.classList.contains('unlocked');
+    if (yes && !wasUnlocked) {
+      el.classList.add('unlocked');
+      if (!silent) {
+        el.style.animation = 'none';
+        setTimeout(() => el.style.animation = 'badgeBounce 0.6s ease', 10);
+        toast(`Achievement Unlocked: ${name}!`);
+      }
+    } else if (!yes) {
+      el.classList.remove('unlocked');
+    }
+  });
+
+  const list=$('#reviewList');
+  list.innerHTML='';
+  if(state.reviewedCards.length){
+    state.reviewedCards.forEach(name=>{const chip=document.createElement('span');chip.className='review-chip';chip.textContent=name;list.append(chip)});
+  }else{
+    const empty=document.createElement('span');
+    empty.style.cssText='font-size:11px;color:var(--muted)';
+    empty.textContent='Belum ada kartu yang ditandai.';
+    list.append(empty);
+  }
+}
+
+// Theme
+function initTheme(){
+  let saved='light';
+  try{saved=localStorage.getItem('ecoThemeV3')||'light'}catch(e){}
+  document.documentElement.setAttribute('data-theme',saved);
+  $('#themeToggle').textContent=saved==='light'?'☾':'☀';
+  drawLorenz();
+}
+$('#themeToggle').addEventListener('click',()=>{
+  const next=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',next);
+  $('#themeToggle').textContent=next==='light'?'☾':'☀';
+  try{localStorage.setItem('ecoThemeV3',next)}catch(e){}
+  drawLorenz();
+});
+
+// Scroll progress + active nav
+function updateScroll(){
+  const d=document.documentElement;
+  const max=d.scrollHeight-d.clientHeight;
+  $('#progressBar').style.width=(max>0?(d.scrollTop/max)*100:0)+'%';
+  let current='home';
+  $$('main section[id], header[id]').forEach(sec=>{if(window.scrollY>=sec.offsetTop-150)current=sec.id});
+  $$('.nav-link').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+current));
+}
+window.addEventListener('scroll',updateScroll,{passive:true});
+window.addEventListener('resize',updateScroll);
+
+// Flashcards
+const cards=[
+ {front:'PDB / GDP',title:'Produk Domestik Bruto',back:'Nilai output barang dan jasa yang diproduksi di dalam wilayah suatu negara, termasuk produksi oleh warga negara asing di wilayah tersebut.'},
+ {front:'PNB / GNP',title:'Produk Nasional Bruto',back:'Nilai output yang dihasilkan penduduk suatu negara di dalam maupun luar negeri (PNB = PDB + PWNI − PWNA).'},
+ {front:'NNP → NNI → PI → DI',title:'Rangkaian Konsep Lanjutan',back:'PNN dikurangi pajak tak langsung + subsidi menjadi NNI; disesuaikan laba ditahan & transfer menjadi PI; dikurangi pajak langsung menjadi DI (siap dibelanjakan).'},
+ {front:'Pendapatan per Kapita',title:'Ukuran rata-rata',back:'Pendapatan nasional dibagi jumlah penduduk. Nilai rata-rata bukan berarti setiap penduduk memperoleh pendapatan yang sama.'},
+ {front:'Lorenz, Gini & Bank Dunia',title:'Indikator Ketimpangan',back:'Ketimpangan diukur lewat lengkungan Kurva Lorenz, Koefisien Gini (0–1), serta Kriteria Bank Dunia (porsi pendapatan 40% penduduk termiskin).'}
+];
+let cardIndex=0;
+let cardSessionComplete=false;
+
+function renderCard(){
+  const done=cardSessionComplete;
+  $('#fc-front').textContent=done?'Mission Complete!':cards[cardIndex].front;
+  $('#fc-title').textContent=done?'Nice work.':cards[cardIndex].title;
+  $('#fc-back').textContent=done?'Kamu sudah meninjau semua kartu. Daftar review tersimpan di Gamer Card.':cards[cardIndex].back;
+  $('#fc-progress').textContent=done?'Selesai · '+cards.length+' kartu':`Kartu ${cardIndex+1} / ${cards.length}`;
+  $('#fc-card').classList.remove('is-flipped');
+  $('#reviewCard').disabled=done;
+  $('#knowCard').disabled=done;
+}
+
+function flipCard(){
+  if(!cardSessionComplete)$('#fc-card').classList.toggle('is-flipped');
+}
+$('#flashcardTap').addEventListener('click',flipCard);
+$('#flashcardTap').addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();flipCard()}
+});
+
+function nextCard(status){
+  if(cardSessionComplete)return;
+  const current=cards[cardIndex].front;
+  if(status==='review'&&!state.reviewedCards.includes(current))state.reviewedCards.push(current);
+  if(status==='paham')state.reviewedCards=state.reviewedCards.filter(x=>x!==current);
+  cardIndex++;
+  if(cardIndex>=cards.length){
+    cardSessionComplete=true;
+    if(!state.flashcardsDone){
+      state.flashcardsDone=true;
+      addXP(50);
+      toast('Mission clear! +50 XP untuk semua flashcard.');
+    }else{
+      saveState();
+      toast('Flashcard selesai. XP penyelesaian sudah pernah diterima.');
+    }
+  }else{
+    saveState();
+  }
+  renderCard();
+}
+$('#reviewCard').addEventListener('click',()=>nextCard('review'));
+$('#knowCard').addEventListener('click',()=>nextCard('paham'));
+
+// Kalkulator pendapatan nasional
+function num(id){const v=Number($('#'+id).value);return Number.isFinite(v)&&v>=0?v:0}
+function formatNumber(value,maximumFractionDigits=2){return new Intl.NumberFormat('id-ID',{maximumFractionDigits}).format(value)}
+
+function switchTab(tab){
+  $$('.tab').forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active))});
+  $$('.calc-pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+tab));
+  $('#calcResult').classList.remove('show');
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+
+function showCalcResult(label,result,steps){
+  $('#resultLabel').textContent=label;
+  $('#resultNumber').textContent=result;
+  $('#resultSteps').textContent=steps;
+  $('#calcResult').classList.add('show');
+}
+
+$('#calcExpenditure').addEventListener('click',()=>{
+  const C=num('valC'),I=num('valI'),G=num('valG'),X=num('valX'),M=num('valM');
+  const y=C+I+G+(X-M);
+  showCalcResult('PENDAPATAN NASIONAL SIMULASI',`Rp ${formatNumber(y)} miliar`,`Y = ${formatNumber(C)} + ${formatNumber(I)} + ${formatNumber(G)} + (${formatNumber(X)} − ${formatNumber(M)}) = ${formatNumber(y)} miliar rupiah.`);
+});
+$('#calcIncome').addEventListener('click',()=>{
+  const w=num('valW'),r=num('valR'),i=num('valInterest'),p=num('valP');
+  const y=w+r+i+p;
+  showCalcResult('PENDAPATAN NASIONAL SIMULASI',`Rp ${formatNumber(y)} miliar`,`Y = upah ${formatNumber(w)} + sewa ${formatNumber(r)} + bunga ${formatNumber(i)} + laba ${formatNumber(p)} = ${formatNumber(y)} miliar rupiah.`);
+});
+$('#calcProduction').addEventListener('click',()=>{
+  const a=num('cotton'),b=num('yarn'),c=num('fabric'),d=num('clothes');
+  const y=a+b+c+d;
+  showCalcResult('TOTAL NILAI TAMBAH SIMULASI',`Rp ${formatNumber(y)}`,`Nilai tambah = ${formatNumber(a)} + ${formatNumber(b)} + ${formatNumber(c)} + ${formatNumber(d)} = ${formatNumber(y)} rupiah. Menjumlahkan nilai tambah membantu menghindari penghitungan ganda.`);
+});
+
+// Pendapatan per kapita
+function calcPerCapita(){
+  const pdb=num('pdbTrillion'),pop=num('populationMillion');
+  if(pop<=0){
+    $('#perCapResult').textContent='Periksa jumlah penduduk';
+    $('#perCapHint').textContent='Nilai harus lebih besar dari 0.';
+    return;
+  }
+  const rupiah=pdb/pop*1000000;
+  $('#perCapResult').textContent='Rp '+formatNumber(rupiah,0);
+  $('#perCapHint').textContent='Rata-rata berdasarkan input simulasi, bukan pendapatan setiap orang.';
+}
+$('#pdbTrillion').addEventListener('input',calcPerCapita);
+$('#populationMillion').addEventListener('input',calcPerCapita);
+
+// Kurva Lorenz (model ilustratif)
+function drawLorenz(){
+  const canvas=$('#lorenzCanvas');
+  if(!canvas)return;
+  const rect=canvas.getBoundingClientRect();
+  const cssWidth=Math.max(280,rect.width||640);
+  const cssHeight=cssWidth*.68;
+  const ratio=window.devicePixelRatio||1;
+  canvas.width=Math.round(cssWidth*ratio);
+  canvas.height=Math.round(cssHeight*ratio);
+  canvas.style.height=cssHeight+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  const w=cssWidth,h=cssHeight;
+  const styles=getComputedStyle(document.documentElement);
+  const grid=styles.getPropertyValue('--chart-grid').trim();
+  const text=styles.getPropertyValue('--muted').trim();
+  const g=Number($('#giniSlider').value);
+  const pad={l:43,r:15,t:18,b:38};
+  const pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle=styles.getPropertyValue('--bg').trim();
+  ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle=grid;
+  ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const x=pad.l+pw*i/4,y=pad.t+ph*i/4;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,h-pad.b);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+  }
+  const X=x=>pad.l+x*pw, Y=y=>pad.t+(1-y)*ph;
+  ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(1),Y(1));
+  ctx.strokeStyle='#05CD99';ctx.lineWidth=2.5;ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);
+  const k=(1+g)/(1-g);
+  ctx.beginPath();ctx.moveTo(X(0),Y(0));
+  for(let i=1;i<=240;i++){const x=i/240;const y=Math.pow(x,k);ctx.lineTo(X(x),Y(y))}
+  ctx.strokeStyle='#FF6384';ctx.lineWidth=3.5;ctx.lineJoin='round';ctx.stroke();
+  ctx.font='10px "Space Mono", monospace';
+  ctx.fillStyle=text;
+  ctx.textAlign='center';
+  ctx.fillText('0%',X(0),h-13);
+  ctx.fillText('100%',X(1),h-13);
+  ctx.fillText('Penduduk (%)',pad.l+pw/2,h-2);
+  ctx.textAlign='right';
+  ctx.fillText('100%',pad.l-7,pad.t+4);
+  ctx.save();
+  ctx.translate(13,pad.t+ph/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';
+  ctx.fillText('Pendapatan (%)',0,0);
+  ctx.restore();
+}
+
+// Gini: kategori mengikuti buku (<0,3 rendah; 0,3–0,5 moderat; >0,5 tinggi)
+function updateGini(){
+  const g=Number($('#giniSlider').value);
+  $('#giniValue').textContent=g.toFixed(2);
+  const badge=$('#giniBadge');
+  if(g<0.3){
+    badge.textContent='Ilustrasi: ketimpangan rendah';
+  }else if(g<=0.5){
+    badge.textContent='Ilustrasi: ketimpangan moderat';
+  }else{
+    badge.textContent='Ilustrasi: ketimpangan tinggi';
+  }
+  $('#giniDescription').textContent=`Nilai Gini simulasi ${g.toFixed(2)}. Kategori mengikuti buku: kurang dari 0,3 rendah; 0,3–0,5 moderat; lebih dari 0,5 tinggi.`;
+  drawLorenz();
+}
+$('#giniSlider').addEventListener('input',updateGini);
+window.addEventListener('resize',drawLorenz);
+
+// Simulasi kebijakan
+const initialBudget=500;
+let budget=initialBudget;
+const selectedPolicies=new Map();
+
+function renderPolicy(){
+  const spent=[...selectedPolicies.values()].reduce((sum,p)=>sum+p.cost,0);
+  budget=initialBudget-spent;
+  $('#budgetValue').textContent=formatNumber(budget,0);
+  $('#budgetFill').style.width=(budget/initialBudget*100)+'%';
+  $('#budgetFill').style.background=budget<150?'var(--coral)':'var(--mint)'; $$('.policy-option').forEach(btn=>{
+    const isSelected=selectedPolicies.has(btn.dataset.id);
+    btn.classList.toggle('selected',isSelected);
+    btn.setAttribute('aria-pressed',String(isSelected));
+    btn.disabled=!isSelected&&budget<Number(btn.dataset.cost);
+  });
+}
+
+function resetPolicyUI(){
+  selectedPolicies.clear();
+  $('#policyLog').textContent='[SYSTEM] Simulasi direset. Anggaran tersedia: Rp500 T.';
+  $('#policyResult').classList.remove('show'); renderPolicy(); }  $$('.policy-option').forEach(btn=>btn.addEventListener('click',()=>{
+  const id=btn.dataset.id;
+  const cost=Number(btn.dataset.cost);
+  const name=btn.querySelector('.policy-name strong').textContent;
+  if(selectedPolicies.has(id)){
+    const previous=selectedPolicies.get(id);
+    selectedPolicies.delete(id);
+    $('#policyLog').innerHTML+=`<br>− Dibatalkan: ${previous.name} (+Rp ${previous.cost} T kembali)`;
+    $('#policyResult').classList.remove('show');
+    renderPolicy();
+    return;
+  }
+  if(budget<cost){
+    toast('Anggaran tidak cukup untuk pilihan ini.');
+    return;
+  }
+  selectedPolicies.set(id,{id,cost,name,benefit:btn.dataset.benefit});
+  $('#policyLog').innerHTML+=`<br>+ Dipilih: ${name} (−Rp ${cost} T)`;
+  renderPolicy();
+  $('#policyLog').scrollTop=$('#policyLog').scrollHeight;
+}));
+
+$('#evaluatePolicy').addEventListener('click',()=>{
+  if(selectedPolicies.size===0){
+    toast('Pilih minimal satu kebijakan dulu.');
+    return;
+  }
+  const chosen=[...selectedPolicies.values()];
+  const structural=chosen.filter(p=>['infrastructure','education','jobs'].includes(p.id)).length;
+  const hasSocial=chosen.some(p=>p.id==='social');
+  let summary='';
+  if(structural>=2&&hasSocial)summary='Paketmu menggabungkan solusi struktural (pendidikan, infrastruktur, atau lapangan kerja) dengan pemberian subsidi tepat sasaran. Tantangannya: pastikan program terkoordinasi, tepat sasaran, dan dievaluasi.';
+  else if(structural>=2)summary='Paketmu berfokus kuat pada pemerataan fondasi jangka panjang seperti pendidikan, infrastruktur, dan kesempatan kerja. Dampaknya berkelanjutan namun membutuhkan waktu serta pelaksanaan yang konsisten.';
+  else if(hasSocial)summary='Paketmu mengutamakan pemberian subsidi langsung dan modal alat usaha untuk menjaga daya beli masyarakat. Pertimbangkan juga kombinasi pemerataan pendidikan dan infrastruktur untuk jangka panjang.';
+  else summary='Paketmu memiliki fokus yang cukup spesifik. Bandingkan dampaknya bila dikombinasikan antara pendidikan, infrastruktur, dan subsidi yang tepat sasaran.';
+  $('#policyResult').innerHTML=`<strong>ANALISIS PAKET SOLUSI KESENJANGAN</strong><br>${summary}<br><br><strong>Pilihan:</strong> ${chosen.map(p=>p.name).join(', ')}.<br><strong>Sisa anggaran:</strong> Rp ${formatNumber(budget,0)} T.<br><em>Ini evaluasi pembelajaran, bukan prediksi dampak kebijakan nyata.</em>`;
+  $('#policyResult').classList.add('show');
+  $('#policyLog').innerHTML+=`<br>[REVIEW] Paket dievaluasi: ${chosen.length} pilihan.`;
+  if(!state.policyDone){
+    state.policyDone=true;
+    addXP(50);
+    toast('Policy review selesai! +50 XP');
+  }else{
+    saveState();
+    toast('Paket dievaluasi. Reward sudah pernah diterima.');
+  }
+});
+
+$('#resetPolicy').addEventListener('click',resetPolicyUI);
+renderPolicy();
+
+// Quiz boss battle
+const quizBank=[
+ {q:'Menurut konsep PDB, produksi pabrik milik perusahaan asing yang beroperasi di Indonesia dihitung sebagai bagian dari…',opts:['PNB negara asal perusahaan saja','PDB Indonesia karena produksinya berada di wilayah Indonesia','Pendapatan disposabel rumah tangga','Nilai Gini Indonesia'],a:1,exp:'PDB melihat lokasi produksi di dalam wilayah negara, termasuk produksi yang dilakukan pelaku asing di wilayah tersebut.'},
+ {q:'Untuk memperoleh Pendapatan Nasional Neto (PN / NNI) dari Produk Nasional Neto (PNN / NNP), maka perhitungannya adalah…',opts:['PNN dikurangi penyusutan barang modal','PNN dikurangi pajak tidak langsung ditambah subsidi','PDB ditambah pendapatan faktor produksi neto luar negeri','PI dikurangi pajak langsung'],a:1,exp:'PN (NNI) diperoleh dari PNN dikurangi pajak tidak langsung (seperti PPN/cukai) dan ditambah subsidi.'},
+ {q:'Rumus pendekatan pengeluaran yang tepat dalam menghitung pendapatan nasional adalah…',opts:['Y = w + r + i + p','Y = PDB ÷ jumlah penduduk','Y = C + I + G + (X − M)','Y = PNB − penyusutan'],a:2,exp:'Pendekatan pengeluaran menjumlahkan konsumsi (C), investasi (I), pengeluaran pemerintah (G), serta ekspor neto (X − M).'},
+ {q:'Mengapa pendapatan per kapita tidak cukup untuk mengetahui pemerataan pendapatan?',opts:['Karena pendapatan per kapita tidak memakai angka','Karena pendapatan per kapita adalah rata-rata, bukan distribusi setiap individu','Karena PDB selalu lebih rendah dari PNB','Karena pendapatan per kapita hanya mengukur ekspor'],a:1,exp:'Rata-rata dapat menyembunyikan perbedaan pendapatan yang besar antara kelompok masyarakat.'},
+ {q:'Pada Kurva Lorenz dan Kriteria Bank Dunia, indikasi ketimpangan distribusi pendapatan yang tinggi ditunjukkan ketika…',opts:['Kurva Lorenz berimpit dengan garis diagonal','Koefisien Gini mendekati 0','Kurva Lorenz makin jauh dari diagonal dan 40% penduduk termiskin menerima <12% pendapatan nasional','40% penduduk termiskin menerima lebih dari 17% pendapatan nasional'],a:2,exp:'Kurva Lorenz yang menjauhi diagonal serta porsi pendapatan 40% penduduk termiskin di bawah 12% menunjukkan ketimpangan tinggi.'}
+];
+let qIndex=0, qCorrect=0, qAnswered=false;
+
+function loadBoss(){
+  qAnswered=false;
+  const q=quizBank[qIndex];
+  $('#qNum').textContent=String(qIndex+1).padStart(2,'0');
+  $('#quizProgress').style.width=(qIndex/quizBank.length*100)+'%';
+  $('#qText').textContent=q.q;
+  $('#qOptions').innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='q-option';
+    const key=document.createElement('span');
+    key.className='option-key';
+    key.textContent=String.fromCharCode(65+i);
+    const label=document.createElement('span');
+    label.textContent=opt;
+    b.append(key,label);
+    b.addEventListener('click',()=>checkAnswer(i,b));
+    $('#qOptions').append(b);
+  });
+  $('#qFeedback').classList.remove('show');
+  $('#qFeedback').textContent='';
+  $('#qNext').style.display='none';
+  $('#qHint').textContent='Pilih satu jawaban terbaik.';
+  $('#quizResult').style.display='none';
+  $('#quizContainer .quiz-top').style.display='flex';
+  $('#quizContainer .quiz-track').style.display='block';
+  $('#qText').style.display='block';
+  $('#qOptions').style.display='grid';
+  $('#qFeedback').style.display='none';
+  $('.quiz-bottom').style.display='flex'; }  function checkAnswer(index,button){ if(qAnswered)return; qAnswered=true; const q=quizBank[qIndex]; const buttons=$$('.q-option');
+  buttons.forEach(b=>b.disabled=true);
+  const fb=$('#qFeedback');
+  fb.style.display='block';
+  if(index===q.a){
+    button.classList.add('correct');
+    qCorrect++;
+    fb.innerHTML=`<strong>✅ Nice read.</strong><br>${q.exp}`;
+  }else{
+    button.classList.add('wrong');
+    buttons[q.a].classList.add('correct');
+    fb.innerHTML=`<strong>❌ Belum tepat.</strong><br>${q.exp}`;
+  }
+  fb.classList.add('show');
+  $('#quizProgress').style.width=((qIndex+1)/quizBank.length*100)+'%';
+  $('#qNext').style.display='inline-flex';
+  $('#qNext').textContent=qIndex===quizBank.length-1?'Lihat hasil ↗':'Next quest →';
+  $('#qHint').textContent='Jawaban telah dikunci untuk soal ini.';
+}
+
+function finishBoss(){
+  $('#quizContainer .quiz-top').style.display='none';
+  $('#quizContainer .quiz-track').style.display='none';
+  $('#qText').style.display='none';
+  $('#qOptions').style.display='none';
+  $('#qFeedback').style.display='none';
+  $('.quiz-bottom').style.display='none';$('#quizResult').style.display='block';
+  $('#quizScore').textContent=qCorrect+'/'+quizBank.length;
+  $('#quizResultTitle').textContent=qCorrect===5?'Boss defeated. Clean sweep.':qCorrect>=3?'Good run. Tinggal poles sedikit.':'Run selesai. Coba review materinya lagi.';
+  $('#quizResultText').textContent=`Kamu menjawab ${qCorrect} dari ${quizBank.length} soal dengan benar.${state.quizRewarded?' XP untuk penyelesaian pertama sudah diterima sebelumnya.':' XP reward dihitung satu kali sesuai jawaban benar pada run ini.'}`;
+  state.quizBest=Math.max(state.quizBest,qCorrect*20);
+  if(!state.quizRewarded){
+    const reward=qCorrect*20;
+    state.quizRewarded=true;
+    state.xp+=reward;
+    saveState();
+    toast(`Challenge clear! +${reward} XP`);
+  }else{
+    saveState();
+  }
+}
+
+$('#qNext').addEventListener('click',()=>{
+  if(qIndex===quizBank.length-1){finishBoss();return}
+  qIndex++;
+  loadBoss();
+});
+$('#retryQuiz').addEventListener('click',()=>{
+  qIndex=0;
+  qCorrect=0;
+  qAnswered=false;
+  loadBoss();
+  toast(state.quizRewarded?'Practice run dimulai. XP tambahan tidak diberikan.':'Quiz diulang.');
+});
+
+// ===== KIRIM REFLEKSI KE GOOGLE FORM =====
+// Isi setiap nilai 'entry.GANTI_...' dengan ID kolom dari Google Form (lihat petunjuk).
+// Urutan kolom di Form harus: Nama, Kelas, Email, Jawaban 1, Jawaban 2, Jawaban 3, Total Experience.
+const GOOGLE_FORM = {
+  viewUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfIYAVXg_GfwL043ZFevMzOZar8oD-FgYdKsIGNZZOdWE7BdQ/viewform?usp=header',
+  action: 'https://docs.google.com/forms/d/e/1FAIpQLSfIYAVXg_GfwL043ZFevMzOZar8oD-FgYdKsIGNZZOdWE7BdQ/formResponse',
+  fields: {
+    nama:     'entry.GANTI_NAMA',
+    kelas:    'entry.GANTI_KELAS',
+    email:    'entry.GANTI_EMAIL',
+    jawaban1: 'entry.GANTI_JAWABAN1',
+    jawaban2: 'entry.GANTI_JAWABAN2',
+    jawaban3: 'entry.GANTI_JAWABAN3',
+    xp:       'entry.GANTI_XP'
+  }
+};
+const FORM_READY = Object.values(GOOGLE_FORM.fields).every(id => !id.includes('GANTI'));
+
+$('#reflectionForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('#submitReflection');
+  const status = $('#reflectionStatus');
+
+  if (!FORM_READY) {
+    window.open(GOOGLE_FORM.viewUrl, '_blank', 'noopener,noreferrer');
+    status.textContent = 'Membuka Google Form pengumpulan di tab baru...';
+    return;
+  }
+
+  const f = GOOGLE_FORM.fields;
+  const body = new URLSearchParams();
+  body.append(f.nama,     $('#rfNama').value.trim());
+  body.append(f.kelas,    $('#rfKelas').value.trim());
+  body.append(f.email,    $('#rfEmail').value.trim());
+  body.append(f.jawaban1, $('#reflection1').value.trim());
+  body.append(f.jawaban2, $('#reflection2').value.trim());
+  body.append(f.jawaban3, $('#reflection3').value.trim());
+  body.append(f.xp,       String(Number(state.xp) || 0));
+
+  btn.disabled = true;
+  status.textContent = 'Mengirim refleksi...';
+
+  try {
+    // Google Form tidak mengizinkan pembacaan respons dari halaman lain,
+    // jadi mode no-cors dipakai. Cek hasilnya di tab Respons pada Google Form.
+    await fetch(GOOGLE_FORM.action, { method: 'POST', mode: 'no-cors', body });
+    status.textContent = 'Refleksi terkirim. Terima kasih!';
+    toast('Refleksi terkirim ke guru.');
+    e.target.reset();
+    syncStateUI(true);
+  } catch (err) {
+    status.textContent = 'Gagal mengirim. Periksa koneksi internet lalu coba lagi.';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// Reset progres
+$('#clearProgress').addEventListener('click',()=>{
+  if(!confirm('Reset XP, achievement, dan review cards yang tersimpan pada browser ini?'))return;
+  state={...defaultState,reviewedCards:[],masterId:'ECO-'+Math.floor(1000+Math.random()*9000)};
+  try{
+    localStorage.removeItem(STORAGE_KEY);
+  }catch(e){}
+  cardIndex=0;
+  cardSessionComplete=false;
+  renderCard();
+  resetPolicyUI();
+  loadState();
+  toast('Progres lokal direset.');
+});
+
+// Inisialisasi
+function runInitialCalc(){
+  const result=500+200+150+(100-80);
+  showCalcResult('CONTOH HASIL SIMULASI','Rp '+formatNumber(result)+' miliar','Y = C + I + G + (X − M) = 500 + 200 + 150 + (100 − 80) = '+formatNumber(result)+' miliar rupiah.');
+}
+
+renderCard();
+loadState();
+initTheme();
+calcPerCapita();
+updateGini();
+runInitialCalc();
+updateScroll();
+loadBoss();
+</script>
+</body>
+</html>
